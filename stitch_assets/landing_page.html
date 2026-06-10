@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Propeers | Elite Mentorship Marketplace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#f97316",
+                    "surface-input": "#1A1A1A",
+                    "on-tertiary-fixed": "#0d1c2d",
+                    "surface-variant": "#353534",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "outline": "#a78b7d",
+                    "outline-variant": "#584237",
+                    "border-strong": "#2A2A2A",
+                    "on-secondary": "#2f3131",
+                    "inverse-on-surface": "#313030",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#b9c8de",
+                    "on-secondary-fixed-variant": "#454747",
+                    "primary-fixed": "#ffdbca",
+                    "tertiary-container": "#8d9cb1",
+                    "surface-container-lowest": "#0e0e0e",
+                    "surface-container-high": "#2a2a2a",
+                    "on-primary": "#552100",
+                    "error-container": "#93000a",
+                    "error": "#ffb4ab",
+                    "on-primary-fixed": "#341100",
+                    "surface-container-highest": "#353534",
+                    "on-secondary-container": "#b4b5b5",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#39485a",
+                    "surface-container-low": "#1c1b1b",
+                    "surface-container": "#201f1f",
+                    "surface-bright": "#3a3939",
+                    "tertiary-fixed": "#d4e4fa",
+                    "success-green": "#22C55E",
+                    "inverse-primary": "#9d4300",
+                    "on-primary-container": "#582200",
+                    "secondary-container": "#454747",
+                    "secondary": "#c6c6c7",
+                    "on-surface": "#e5e2e1",
+                    "tertiary": "#b9c8de",
+                    "on-surface-variant": "#e0c0b1",
+                    "surface-dim": "#131313",
+                    "background": "#131313",
+                    "primary": "#ffb690",
+                    "primary-fixed-dim": "#ffb690",
+                    "secondary-fixed": "#e2e2e2",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary": "#233143",
+                    "on-primary-fixed-variant": "#783200",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "surface-tint": "#ffb690",
+                    "on-tertiary-container": "#253445",
+                    "inverse-surface": "#e5e2e1",
+                    "surface": "#111111",
+                    "border-subtle": "#1E1E1E"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "stack-md": "24px",
+                    "container-max": "1280px",
+                    "gutter": "24px",
+                    "base-unit": "4px",
+                    "stack-sm": "8px",
+                    "stack-lg": "48px"
+            },
+            "fontFamily": {
+                    "button": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-xl": ["Inter"]
+            },
+            "fontSize": {
+                    "button": ["16px", {"lineHeight": "1", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0A0A0A;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-hover:hover {
+            border-color: #f97316;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.1);
+            transform: translateY(-2px);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .mentor-scroll-container {
+            mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+        }
+    </style>
+</head>
+<body class="antialiased">
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border-subtle">
+<nav class="flex justify-between items-center w-full px-margin-mobile md:px-gutter max-w-container-max mx-auto h-16">
+<!-- Brand -->
+<div class="font-headline-md text-headline-md font-bold text-on-surface">Propeers</div>
+<!-- Desktop Links -->
+<div class="hidden md:flex items-center gap-stack-md">
+<a class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-1" href="#">Explore</a>
+<a class="font-label-md text-label-md text-secondary hover:text-on-surface transition-colors" href="#">How It Works</a>
+<a class="font-label-md text-label-md text-secondary hover:text-on-surface transition-colors" href="#">About</a>
+</div>
+<!-- CTA Cluster -->
+<div class="flex items-center gap-4">
+<button class="hidden sm:block font-button text-button text-secondary hover:text-on-surface transition-all active:scale-95 duration-150">Log In</button>
+<button class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-lg font-button text-button transition-all active:scale-95 duration-150">Sign Up</button>
+</div>
+</nav>
+</header>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative min-h-[870px] flex flex-col items-center justify-center text-center px-margin-mobile overflow-hidden">
+
+<div class="relative z-10 max-w-4xl mx-auto space-y-stack-md">
+<h1 class="font-headline-xl text-headline-xl md:text-6xl text-on-surface tracking-tight leading-tight">
+                    Learn from people who've <span class="text-primary-container">been there.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-secondary max-w-2xl mx-auto">
+                    1:1 mentorship sessions with engineers at top companies. Skip the guessing game and accelerate your career with proven experts.
+                </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+<button class="w-full sm:w-auto bg-primary-container text-on-primary-container px-8 py-4 rounded-lg font-button text-button hover:bg-opacity-90 transition-all active:scale-95">
+                        Find a Mentor
+                    </button>
+<button class="w-full sm:w-auto border border-primary-container text-primary-container px-8 py-4 rounded-lg font-button text-button hover:bg-primary-container/10 transition-all active:scale-95">
+                        Become a Mentor
+                    </button>
+</div>
+</div>
+</section>
+<!-- Mentor Strip -->
+<section class="py-stack-lg bg-surface-container-lowest border-y border-border-subtle">
+<div class="mentor-scroll-container overflow-hidden w-full whitespace-nowrap">
+<div class="flex animate-scroll items-center gap-12 px-gutter">
+<!-- Repeated items for continuous scroll feel -->
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 rounded-full border-2 border-border-strong group-hover:border-primary-container overflow-hidden transition-all duration-300">
+<img alt="" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling male software engineer with short dark hair and a neat beard. He is wearing a minimalist dark polo shirt. The background is a soft-focus high-end tech office with warm ambient lighting and orange accents. High-contrast dark modern portrait style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBph7epDp35316Z1kcL2JRj4mj0wnb2-n2g_LFKsnTmxS5fX9aFCoFgt3hg5BnQy40AuiFD-K3dky_DkwH0MZ5X5NW7m_8rQBdH1aAqCatae7p9g_7d4QG5RTHuJcBHSKDzXp2eB3Obp47XVugXAF_eB3jZwcyPwjy321wLcQ5Tj4HU9KElgp8k48qCFKm1LV5KBnXZ6leJni0NHV4tP5-e92AugEGEcGqkpsq6LA9BtmntnrYrzzR1zmYqi4_i4mzj1B0gFwodalhb"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Alex Chen</p>
+<p class="text-xs text-secondary">Google</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 rounded-full border-2 border-border-strong group-hover:border-primary-container overflow-hidden transition-all duration-300">
+<img alt="" class="w-full h-full object-cover" data-alt="A professional studio portrait of a woman with a confident expression and long brown hair. She is wearing a modern slate gray blazer. The lighting is sophisticated and moody, emphasizing a premium professional aesthetic with subtle orange highlights reflecting on her silhouette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6mFfrpQU0B_z4yaGl0vkAK-4Wv_jIbrBaRXdG7h9QaWtEoVWtiAfi4zEPA9XtU6r6bSyybSk485N8M2a8Ddmdf56aa2C3l-37NG7HsBP4sCthEBGkPZo7SaxBMjxwKP0VL82ePUUk_sOu4ZIXZl8_3TrqZltjbiidRx6I6E6dVwhWOwdCR6fdBctEMUrxDwig-zanQugCzBM3nOjquBuf5aN8_Y7MEBLrVZJwlvRY9jxBc3QLR6CoXcEvfw-O2WHCPSECr0jbFgXL"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Sarah Miller</p>
+<p class="text-xs text-secondary">Meta</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 rounded-full border-2 border-border-strong group-hover:border-primary-container overflow-hidden transition-all duration-300">
+<img alt="" class="w-full h-full object-cover" data-alt="Close-up headshot of a male tech professional with glasses and a friendly, intelligent expression. He is positioned against a dark textured background with a single streak of orange light providing a professional, elite glow. The image quality is sharp and high-fidelity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHpiRfimBlqECcZAcVlnaog77qhPv6Shf0NaOerk5zB79_9o3XrFywDT4yp6scT7iSff1CiUMdWA0pgtnnaSgbc78ykzefMctejSMnnqL415M3_ExEI_dHCxasqXxG_Np87835tAn7qBt9dYH-VeXUnd-dhsJhlGTFo6R_ZT1Z-oeuYsyMVwf8T0PshIVNPSjEjCWJtTFWSwC2rNimoyTSCQMqKAwJmk2Be4Vc57JgKzNeSJJrdCON09Xi5-HVFJ7O-_WKLs_jw3Pd"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">James Wilson</p>
+<p class="text-xs text-secondary">Amazon</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 rounded-full border-2 border-border-strong group-hover:border-primary-container overflow-hidden transition-all duration-300">
+<img alt="" class="w-full h-full object-cover" data-alt="A focused portrait of a professional woman of color with her hair tied back, looking directly at the camera with an empowered gaze. She is wearing a sleek black turtleneck. The environment is a minimalist dark workspace with high-end designer furniture and warm, luminescent orange light accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh21dFm38oQ6TsXZcFSuOw9Oh2XHEjyb2-DmzUseUZsa78GLcmgBxacbrVYGMoe5i-OlIlZq7ZEgU0a8Hl-COkAVlopkUfw6W3hcpO7SOmF7RWAGOQZbqr791UDaOyzwIdC-Hy3WJNsu_fUJ-KVDm92xmRnNSl3G0X-H2ZBtT9T3fKJ0C-qWSeYgNlBWAHDz8Hs5x72C4kcFHHspQA202SaWn_8gxcD9QIGQmJ8Bx0xjD1x3fUNK6Ql4sY0wuA4aosu2IjKxxTh3DA"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Elena Rodriguez</p>
+<p class="text-xs text-secondary">Netflix</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 rounded-full border-2 border-border-strong group-hover:border-primary-container overflow-hidden transition-all duration-300">
+<img alt="" class="w-full h-full object-cover" data-alt="A portrait of a male product manager in his late 30s with a clean-shaven head and a modern black t-shirt. He is standing in a low-light tech environment with glowing orange neon lines in the deep background. The style is professional, energetic, and high-contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATtHCLQwpeZMt7ijtM_rfbcyXw7zCmkwDOvjiR9H5YyFsI96UFRiGQKeJY_FDRFNM5uzD52y2cdEnlZ1PWwqf4AFcDgw0w9W4a4YOEkE6qv0h-7DRsHukw6Uo7K2MTzX-_3aiXte2-BKIMgAO2c5lH39h0KHYLQmiwjHzyFO8-u2V3RwM_hAA7J9vyoVWllkptDsvB1Z5iWqZZOEc0rbe_RW3Wf_4Kw2phHWzk067MEiGLtdQ2BY7cOgEm7FaNV7JgOtRd-HSI4BIQ"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Marcus Thorne</p>
+<p class="text-xs text-secondary">Apple</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-24 px-margin-mobile max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">How it works</h2>
+<div class="w-12 h-1 bg-primary-container mx-auto"></div>
+</div>
+<div class="grid md:grid-cols-3 gap-12">
+<div class="text-center group">
+<div class="w-16 h-16 bg-surface-container-high rounded-xl flex items-center justify-center mx-auto mb-6 border border-border-strong group-hover:border-primary-container transition-all">
+<span class="material-symbols-outlined text-primary-container text-3xl">search</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">Browse</h3>
+<p class="font-body-md text-body-md text-secondary">Find the perfect mentor based on role, company, or expertise.</p>
+</div>
+<div class="text-center group">
+<div class="w-16 h-16 bg-surface-container-high rounded-xl flex items-center justify-center mx-auto mb-6 border border-border-strong group-hover:border-primary-container transition-all">
+<span class="material-symbols-outlined text-primary-container text-3xl">event_available</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">Book</h3>
+<p class="font-body-md text-body-md text-secondary">Schedule a 1:1 session at a time that works for both of you.</p>
+</div>
+<div class="text-center group">
+<div class="w-16 h-16 bg-surface-container-high rounded-xl flex items-center justify-center mx-auto mb-6 border border-border-strong group-hover:border-primary-container transition-all">
+<span class="material-symbols-outlined text-primary-container text-3xl">video_call</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">Join</h3>
+<p class="font-body-md text-body-md text-secondary">Connect via video call and get personalized career guidance.</p>
+</div>
+</div>
+</section>
+<!-- Featured Mentors Grid -->
+<section class="py-24 bg-[#0A0A0A]">
+<div class="max-w-container-max mx-auto px-margin-mobile">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Featured Mentors</h2>
+<p class="text-secondary">Handpicked experts to help you level up.</p>
+</div>
+<a class="text-primary-container font-label-md flex items-center gap-1 hover:underline" href="#">
+                        View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-surface border border-border-strong p-6 rounded-lg glow-hover transition-all duration-300">
+<div class="flex items-start justify-between mb-4">
+<div class="w-20 h-20 rounded-lg overflow-hidden border border-border-strong">
+<img alt="" class="w-full h-full object-cover" data-alt="A sharp, professional headshot of a female engineering lead with a confident smile. She is wearing a modern black blazer against a deep, dark grey studio background. The lighting is crisp and highlights her features with a high-end, elite aesthetic including subtle orange color grading." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAr0gH9m7RuLQtaoWumPIMZWM8boY9QvC7_d85H50Q00imuImQiV_8WrvS3DmeWFbubYdiHAXAGmF1-dXVvwkdnmugA--RNBnOAQ1J5wjRwGxMTkaavececPG35TOXqr0UsaKVHQ14EYWN7Nnv_IjftWnMvuKHCT9veI2EfbR9397C8huUwseZaEuhUx89iHWbz3swWFoAG6Z-Zi2Ac2WbhV-C9aasGW4dQkYRVF0TnrnZb2kJ_yEpLESDcstJ0FgcMAYW-M3A-pGJH"/>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1 text-primary-container mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md">4.9</span>
+</div>
+<p class="text-xs text-secondary">(120 reviews)</p>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md mb-1">Ananya Gupta</h3>
+<p class="font-body-sm text-body-sm text-secondary mb-4">Staff Engineer @ Google</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">System Design</span>
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">Career Pivot</span>
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">Java</span>
+</div>
+<div class="flex items-center justify-between border-t border-border-strong pt-4">
+<div>
+<p class="text-xs text-secondary uppercase tracking-widest font-bold">Starting from</p>
+<p class="text-xl font-bold text-on-surface">₹1,499</p>
+</div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-button text-sm hover:scale-105 transition-transform">Book Session</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface border border-border-strong p-6 rounded-lg glow-hover transition-all duration-300">
+<div class="flex items-start justify-between mb-4">
+<div class="w-20 h-20 rounded-lg overflow-hidden border border-border-strong">
+<img alt="" class="w-full h-full object-cover" data-alt="A portrait of a male technology executive with a polished and professional look. He is wearing a minimalist black dress shirt. The setting is a luxury dark-themed office with soft bokeh of city lights at night and professional orange accent lighting. The mood is powerful and exclusive." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgDCAbiTySHNZ_NQ-23zJHoDxRevcg8Ps35tq7wUFRceLxfhj_641DgUhExr2Np7UebgziACmN_CDVvw9bm1uernvEbwxYI2zsXNguSCMWBd00UvJVBs-xSEiXG76Eu2nMqLA1UAzeu62fXc_ue0Q0plQ00BW6MEcenJj5udRlBS3iEqtvH0thHf47vXPCGs1HsqYmk6UkDEUWI5oEKn6n4_YJwOOwmcMZujnjCap-dDf1_Mp8U_JvCFqxwmGoxlxbiQyAH1R8jr-c"/>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1 text-primary-container mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md">5.0</span>
+</div>
+<p class="text-xs text-secondary">(85 reviews)</p>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md mb-1">David Larsson</h3>
+<p class="font-body-sm text-body-sm text-secondary mb-4">Senior Developer @ Meta</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">React</span>
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">Web3</span>
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">Node.js</span>
+</div>
+<div class="flex items-center justify-between border-t border-border-strong pt-4">
+<div>
+<p class="text-xs text-secondary uppercase tracking-widest font-bold">Starting from</p>
+<p class="text-xl font-bold text-on-surface">₹999</p>
+</div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-button text-sm hover:scale-105 transition-transform">Book Session</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface border border-border-strong p-6 rounded-lg glow-hover transition-all duration-300">
+<div class="flex items-start justify-between mb-4">
+<div class="w-20 h-20 rounded-lg overflow-hidden border border-border-strong">
+<img alt="" class="w-full h-full object-cover" data-alt="A high-end professional portrait of a female software architect. She is looking slightly off-camera with a brilliant, insightful expression. She's wearing a modern charcoal grey silk top. The background is a minimalist black with very subtle, glowing orange geometric patterns that symbolize technology and connectivity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3v9QwAuou0RnfONRVMlUJoQnpDx4NVqdlSu8UyEAk9EzydIZgCgJEqSKJTCGjuSfqQ7qjKZ4KCYP1Zh1IKzNNtqoF9raT-Yjg3aekZF7eq8IFdQyw0OyjLrP4_O6lNssH96rlaUWvZlz4rPmMRdKwX3X5bskp_krx8XfkG3yOz-7iyMiIfdiaqtleJ15oowgCiBgh28jKtxjja7aMYaw4RzCKNS03xyX4jcp4HZ3vWgHYpWu2AsOZtani4llOo-bTWxBRVcguJGfj"/>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1 text-primary-container mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md">4.8</span>
+</div>
+<p class="text-xs text-secondary">(210 reviews)</p>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md mb-1">Maya Patel</h3>
+<p class="font-body-sm text-body-sm text-secondary mb-4">Product Lead @ Amazon</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">Product Strategy</span>
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">Leadership</span>
+<span class="px-3 py-1 bg-surface-variant/30 text-secondary-fixed text-[10px] uppercase tracking-wider font-bold rounded-full">UI/UX</span>
+</div>
+<div class="flex items-center justify-between border-t border-border-strong pt-4">
+<div>
+<p class="text-xs text-secondary uppercase tracking-widest font-bold">Starting from</p>
+<p class="text-xl font-bold text-on-surface">₹2,499</p>
+</div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-button text-sm hover:scale-105 transition-transform">Book Session</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="bg-surface-container-lowest border-t border-border-strong mt-stack-lg">
+<div class="max-w-container-max mx-auto px-margin-mobile py-stack-lg flex flex-col md:flex-row justify-between items-center gap-stack-md">
+<!-- Brand & Copyright -->
+<div class="flex flex-col items-center md:items-start gap-2">
+<div class="text-headline-md font-bold text-on-surface">Propeers</div>
+<p class="font-body-sm text-body-sm text-secondary">© 2024 Propeers. All rights reserved.</p>
+</div>
+<!-- Footer Links -->
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-label-md text-label-md text-secondary hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-secondary hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-secondary hover:text-primary transition-colors" href="#">Cookie Policy</a>
+<a class="font-label-md text-label-md text-secondary hover:text-primary transition-colors" href="#">Support</a>
+</div>
+<!-- Social placeholders -->
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-primary-container border border-border-strong transition-all" href="#">
+<span class="material-symbols-outlined">alternate_email</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-primary-container border border-border-strong transition-all" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for navbar transparency shift
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('bg-background/95');
+                header.classList.remove('bg-background/80');
+            } else {
+                header.classList.add('bg-background/80');
+                header.classList.remove('bg-background/95');
+            }
+        });
+    </script>
+</body></html>
