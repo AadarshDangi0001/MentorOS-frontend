@@ -218,6 +218,7 @@ export default function ExplorePage() {
               {filteredMentors.map((mentor, index) => (
                 <MentorCard
                   key={mentor._id || index}
+                  mentorId={mentor.user?._id || mentor.user}
                   name={mentor.user?.name || mentor.name}
                   role={mentor.currentRole || mentor.role}
                   company={mentor.company}

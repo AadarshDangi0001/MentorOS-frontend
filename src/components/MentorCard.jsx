@@ -1,7 +1,9 @@
 import React from 'react';
-import { Star, StarHalf } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Star } from 'lucide-react';
 
 export default function MentorCard({
+  mentorId,
   name,
   role,
   company,
@@ -12,6 +14,8 @@ export default function MentorCard({
   startingPrice,
   onBookSession,
 }) {
+  const navigate = useNavigate();
+
   // Bug fix: guard against undefined startingPrice
   const priceDisplay = startingPrice != null
     ? `₹${Number(startingPrice).toLocaleString('en-IN')}`
@@ -20,7 +24,10 @@ export default function MentorCard({
   const displayedSkills = skills.slice(0, 3);
 
   return (
-    <div className="group relative bg-surface border border-border-strong rounded-2xl p-5 glow-hover transition-all duration-300 flex flex-col justify-between overflow-hidden">
+    <div
+      onClick={() => mentorId && navigate(`/mentor/${mentorId}`)}
+      className="group relative bg-surface border border-border-strong rounded-2xl p-5 glow-hover transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer hover:border-primary-container/40"
+    >
       {/* Subtle background glow on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-container/0 to-primary-container/0 group-hover:from-primary-container/3 group-hover:to-transparent transition-all duration-500 rounded-2xl pointer-events-none" />
 
@@ -85,8 +92,11 @@ export default function MentorCard({
           <p className="text-lg font-bold text-on-surface">{priceDisplay}</p>
         </div>
         <button
-          onClick={onBookSession}
-          className="btn-primary text-xs px-4 py-2 rounded-xl"
+          onClick={(e) => {
+            e.stopPropagation();
+            onBookSession();
+          }}
+          className="btn-primary text-xs px-4 py-2 rounded-xl relative z-10"
         >
           Book Session
         </button>

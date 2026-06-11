@@ -108,6 +108,8 @@ export const api = {
     },
     changePassword: (currentPassword, newPassword) =>
       request('/private/auth/change-password', { method: 'PATCH', body: { currentPassword, newPassword } }),
+    updateMe: (data) =>
+      request('/private/auth/me', { method: 'PATCH', body: data }),
   },
   explore: {
     list: (params = {}) => {
@@ -146,12 +148,14 @@ export const api = {
     requestReschedule: (bookingId, reason, newAvailabilityId) =>
       request(`/private/bookings/${bookingId}/reschedule`, {
         method: 'POST',
-        body: { rescheduleReason: reason, rescheduleNewAvailability: newAvailabilityId },
+        body: { reason, newAvailabilityId },
       }),
     acceptReschedule: (bookingId) =>
       request(`/private/bookings/${bookingId}/accept-reschedule`, { method: 'POST' }),
     rejectReschedule: (bookingId) =>
       request(`/private/bookings/${bookingId}/reject-reschedule`, { method: 'POST' }),
+    cancel: (bookingId) =>
+      request(`/private/bookings/${bookingId}/cancel`, { method: 'POST' }),
   },
   mentor: {
     getProfile: () => request('/private/mentor/profile', { method: 'GET' }),
@@ -166,5 +170,26 @@ export const api = {
         method: 'POST',
         body: { razorpayOrderId, razorpayPaymentId, razorpaySignature, meetingData },
       }),
+  },
+  admin: {
+    getStats: () => request('/private/admin/stats', { method: 'GET' }),
+    listUsers: (page = 1, limit = 20) =>
+      request(`/private/admin/users?page=${page}&limit=${limit}`, { method: 'GET' }),
+    listMentors: (page = 1, limit = 20) =>
+      request(`/private/admin/mentors?page=${page}&limit=${limit}`, { method: 'GET' }),
+    blockUser: (id) =>
+      request(`/private/admin/users/${id}/block`, { method: 'PATCH' }),
+    unblockUser: (id, role) =>
+      request(`/private/admin/users/${id}/unblock`, { method: 'PATCH', body: { role } }),
+    deleteUser: (id) =>
+      request(`/private/admin/users/${id}/delete`, { method: 'PATCH' }),
+    approveMentor: (userId) =>
+      request(`/private/admin/mentors/${userId}/approve`, { method: 'PATCH' }),
+    rejectMentor: (userId) =>
+      request(`/private/admin/mentors/${userId}/reject`, { method: 'PATCH' }),
+    changeRole: (id, role) =>
+      request(`/private/admin/users/${id}/role`, { method: 'PATCH', body: { role } }),
+    createMentor: (data) =>
+      request('/private/admin/mentors', { method: 'POST', body: data }),
   },
 };

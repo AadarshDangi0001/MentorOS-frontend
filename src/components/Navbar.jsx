@@ -78,12 +78,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-7">
           <NavLink to="/explore">Explore</NavLink>
           {user && <NavLink to="/dashboard">Dashboard</NavLink>}
-          <a
-            href="#how-it-works"
-            className="text-sm font-medium text-secondary hover:text-on-surface transition-colors duration-200"
-          >
-            How It Works
-          </a>
+          <NavLink to="/how-it-works">How It Works</NavLink>
         </div>
 
         {/* Right CTA Cluster */}
@@ -127,9 +122,15 @@ export default function Navbar() {
                     >
                       Dashboard
                     </Link>
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2 px-3 py-2.5 text-sm text-secondary hover:text-on-surface hover:bg-white/5 transition-all"
+                    >
+                      My Profile
+                    </Link>
                     <button
                       onClick={() => { setUserMenuOpen(false); logout(); }}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-rose-400 hover:bg-rose-950/20 transition-all cursor-pointer"
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-rose-400 hover:bg-rose-950/20 transition-all cursor-pointer border-t border-border-strong"
                     >
                       <LogOut size={14} /> Log Out
                     </button>
@@ -186,12 +187,14 @@ export default function Navbar() {
               Dashboard
             </Link>
           )}
-          <a
-            href="#how-it-works"
-            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-white/5 transition-all"
+          <Link
+            to="/how-it-works"
+            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              isActive('/how-it-works') ? 'text-primary-container bg-primary-container/5' : 'text-secondary hover:text-on-surface hover:bg-white/5'
+            }`}
           >
             How It Works
-          </a>
+          </Link>
 
           <div className="border-t border-border-strong pt-4 mt-2">
             {user ? (
@@ -207,6 +210,14 @@ export default function Navbar() {
                     <p className="text-xs text-secondary capitalize">{user.role}</p>
                   </div>
                 </div>
+                <Link
+                  to="/profile"
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    isActive('/profile') ? 'text-primary-container bg-primary-container/5' : 'text-secondary hover:text-on-surface hover:bg-white/5'
+                  }`}
+                >
+                  My Profile
+                </Link>
                 <button
                   onClick={() => { setIsOpen(false); logout(); }}
                   className="w-full text-center text-sm font-medium text-rose-400 py-2.5 rounded-xl bg-rose-950/20 border border-rose-500/10 hover:bg-rose-950/40 cursor-pointer transition-all"

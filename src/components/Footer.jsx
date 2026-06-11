@@ -149,7 +149,7 @@ export default function Footer() {
             &copy; {currentYear} MentorOS. All rights reserved.
           </p>
           <p className="text-xs text-secondary">
-            Built with ❤️ for developers worldwide
+            
           </p>
         </div>
       </div>
