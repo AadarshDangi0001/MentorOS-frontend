@@ -9,12 +9,14 @@ import ProfilePage from './pages/ProfilePage';
 import HowItWorksPage from './pages/HowItWorksPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import GoogleAuthSuccess from './pages/GoogleAuthSuccess';
-import './App.css';
+
 
 // Routes that have their own full-screen layout (no navbar/footer)
-const FULLSCREEN_ROUTES = ['/auth/login', '/auth/register', '/auth/google/success'];
+const FULLSCREEN_ROUTES = ['/auth/login', '/auth/register', '/auth/google/success', '/auth/forgot-password', '/auth/reset-password', '/reset-password'];
 
 function AppLayout() {
   const location = useLocation();
@@ -33,6 +35,9 @@ function AppLayout() {
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
+          <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/auth/reset-password/:token" element={<ResetPasswordPage />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
           <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>

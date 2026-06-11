@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { useToast } from '../components/Toast';
 import {
-  User, Lock, Briefcase, Award, Globe, DollarSign, Check, Eye, EyeOff, Save, Link as LinkIcon
+  User, Briefcase, Award, Globe, DollarSign, Save, Link as LinkIcon, Upload, Loader2
 } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -13,24 +13,15 @@ export default function ProfilePage() {
   // General Loading/Saving states
   const [savingUser, setSavingUser] = useState(false);
   const [savingMentor, setSavingMentor] = useState(false);
-  const [savingPassword, setSavingPassword] = useState(false);
   const [loadingMentor, setLoadingMentor] = useState(false);
-
-  // Password visibility states
-  const [showCurrentPass, setShowCurrentPass] = useState(false);
-  const [showNewPass, setShowNewPass] = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   // User fields
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
-
-  // Password fields
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Mentor fields
   const [mentorProfile, setMentorProfile] = useState(null);
@@ -74,6 +65,39 @@ export default function ProfilePage() {
       console.error('Failed to load mentor profile details', err);
     } finally {
       setLoadingMentor(false);
+    }
+  };
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showError('Image size exceeds 5MB limit.');
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      showError('Please upload an image file (JPEG, PNG, WEBP).');
+      return;
+    }
+
+    try {
+      setUploadingAvatar(true);
+      const res = await api.media.upload(file);
+      if (res.success && res.data?.url) {
+        setAvatar(res.data.url);
+        if (res.data?.user) {
+          updateProfileState(res.data.user);
+        }
+        showSuccess('Profile picture updated successfully!');
+      } else {
+        throw new Error(res.message || 'Failed to upload image');
+      }
+    } catch (err) {
+      showError(err.message || 'Failed to upload image');
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -122,36 +146,7 @@ export default function ProfilePage() {
     }
   };
 
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    if (!currentPassword) {
-      showError('Current password is required');
-      return;
-    }
-    if (newPassword.length < 8) {
-      showError('New password must be at least 8 characters');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      showError('Passwords do not match');
-      return;
-    }
 
-    try {
-      setSavingPassword(true);
-      await api.auth.changePassword(currentPassword, newPassword);
-      showSuccess('Password updated successfully! Please log in again.');
-      // Auto logout
-      setTimeout(() => {
-        api.auth.logout();
-        window.location.href = '/auth/login';
-      }, 1500);
-    } catch (err) {
-      showError(err.message || 'Failed to change password');
-    } finally {
-      setSavingPassword(false);
-    }
-  };
 
   if (!user) {
     return (
@@ -167,12 +162,10 @@ export default function ProfilePage() {
       <div className="mb-8">
         <p className="text-xs text-primary-container font-bold uppercase tracking-widest mb-2">Account Settings</p>
         <h1 className="text-4xl font-black text-on-surface">My Profile</h1>
-        <p className="text-secondary mt-1">Manage your public information, mentorship preferences, and security settings</p>
+        <p className="text-secondary mt-1">Manage your public information and mentorship preferences</p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Left column: Preview & Personal Info */}
-        <div className="lg:col-span-2 space-y-8">
+      <div className="max-w-3xl mx-auto space-y-8">
           {/* Card: Personal Details */}
           <div className="relative overflow-hidden p-6 md:p-8 border border-border-strong rounded-2xl bg-surface-container-lowest shadow-lg">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent pointer-events-none" />
@@ -188,25 +181,55 @@ export default function ProfilePage() {
             </div>
 
             <form onSubmit={handleUpdateUser} className="space-y-5">
-              {/* Profile Image Preview & URL input */}
+              {/* Profile Image Preview & Upload */}
               <div className="flex flex-col sm:flex-row items-center gap-5 pb-3">
-                <img
-                  src={avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=f97316&color=1a0800&bold=true&size=128`}
-                  alt={name}
-                  className="w-20 h-20 rounded-2xl border-2 border-primary-container/30 object-cover flex-shrink-0 bg-surface-container"
-                  onError={(e) => {
-                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=f97316&color=1a0800&bold=true&size=128`;
-                  }}
-                />
-                <div className="w-full">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary mb-2">Avatar Image URL</label>
-                  <input
-                    type="url"
-                    value={avatar}
-                    onChange={(e) => setAvatar(e.target.value)}
-                    placeholder="https://example.com/avatar.jpg"
-                    className="w-full bg-surface-input border border-border-strong rounded-xl px-3.5 py-2.5 text-sm text-on-surface transition-all focus:border-primary-container focus:outline-none"
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <img
+                    src={avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=f97316&color=1a0800&bold=true&size=128`}
+                    alt={name}
+                    className="w-full h-full rounded-2xl border-2 border-primary-container/30 object-cover bg-surface-container"
+                    onError={(e) => {
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=f97316&color=1a0800&bold=true&size=128`;
+                    }}
                   />
+                  {uploadingAvatar && (
+                    <div className="absolute inset-0 bg-background/70 rounded-2xl flex items-center justify-center">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary-container" />
+                    </div>
+                  )}
+                </div>
+                <div className="w-full space-y-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary">Profile Image</label>
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleAvatarChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      disabled={uploadingAvatar}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="bg-surface-container border border-border-strong text-on-surface hover:bg-surface-container-high transition-colors text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
+                    >
+                      <Upload size={14} className="text-secondary" />
+                      Upload Image
+                    </button>
+                    {avatar && (
+                      <button
+                        type="button"
+                        onClick={() => setAvatar('')}
+                        className="border border-red-500/20 bg-red-950/10 hover:bg-red-950/25 text-red-400 transition-colors text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center gap-1.5 cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-secondary leading-relaxed">
+                    Support JPG, PNG or WEBP. Max size 5MB.
+                  </p>
                 </div>
               </div>
 
@@ -399,103 +422,6 @@ export default function ProfilePage() {
               )}
             </div>
           )}
-        </div>
-
-        {/* Right column: Security & password settings */}
-        <div className="space-y-8">
-          {/* Card: Change Password */}
-          <div className="relative overflow-hidden p-6 md:p-8 border border-border-strong rounded-2xl bg-surface-container-lowest shadow-lg">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent pointer-events-none" />
-
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-primary-container/10 rounded-xl flex items-center justify-center text-primary-container">
-                <Lock size={18} />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-on-surface">Change Password</h2>
-                <p className="text-xs text-secondary">Keep your account secure by rotating your password</p>
-              </div>
-            </div>
-
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary mb-2">Current Password</label>
-                <div className="relative">
-                  <input
-                    type={showCurrentPass ? 'text' : 'password'}
-                    required
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-surface-input border border-border-strong rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-on-surface transition-all focus:border-primary-container focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPass(!showCurrentPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface cursor-pointer"
-                  >
-                    {showCurrentPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary mb-2">New Password</label>
-                <div className="relative">
-                  <input
-                    type={showNewPass ? 'text' : 'password'}
-                    required
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Min 8 characters"
-                    className="w-full bg-surface-input border border-border-strong rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-on-surface transition-all focus:border-primary-container focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPass(!showNewPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface cursor-pointer"
-                  >
-                    {showNewPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary mb-2">Confirm New Password</label>
-                <div className="relative">
-                  <input
-                    type={showConfirmPass ? 'text' : 'password'}
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-surface-input border border-border-strong rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-on-surface transition-all focus:border-primary-container focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPass(!showConfirmPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface cursor-pointer"
-                  >
-                    {showConfirmPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={savingPassword}
-                  className="w-full btn-primary text-sm py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 font-bold"
-                >
-                  {savingPassword ? (
-                    <div className="w-4 h-4 border-2 border-on-primary-container border-t-transparent rounded-full animate-spin" />
-                  ) : <Check size={16} />}
-                  Update Password
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
       </div>
     </div>
   );

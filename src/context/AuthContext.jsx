@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { api } from '../services/api';
+import React, { createContext, useContext, useEffect, useCallback } from 'react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { store } from '../store';
 import { useToast } from '../components/Toast';
+import { fetchProfile, login, register, logout, updateProfileState } from '../store/authSlice';
 
 const AuthContext = createContext(null);
 
@@ -12,97 +14,61 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const cached = localStorage.getItem('user');
-    return cached ? JSON.parse(cached) : null;
-  });
-  const [loading, setLoading] = useState(true);
+const AuthContextShim = ({ children }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const loading = useSelector((state) => state.auth.loading);
   const { showSuccess, showError, showInfo } = useToast();
 
-  const fetchProfile = useCallback(async () => {
+  const handleFetchProfile = useCallback(async () => {
     try {
-      const response = await api.auth.getMe();
-      if (response.success && response.data?.user) {
-        setUser(response.data.user);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
+      await dispatch(fetchProfile()).unwrap();
     } catch (err) {
       console.error('Failed to fetch profile:', err);
-      // Clean up invalid session
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setUser(null);
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      fetchProfile();
-    } else {
-      setLoading(false);
+      handleFetchProfile();
     }
-  }, [fetchProfile]);
+  }, [handleFetchProfile]);
 
-  const login = async (email, password) => {
-    setLoading(true);
+  const handleLogin = async (email, password) => {
     try {
-      const response = await api.auth.login(email, password);
-      if (response.success && response.data) {
-        const { user: loggedUser, accessToken } = response.data;
-        localStorage.setItem('token', accessToken);
-        localStorage.setItem('user', JSON.stringify(loggedUser));
-        setUser(loggedUser);
-        showSuccess(`Welcome back, ${loggedUser.name}!`);
-        return loggedUser;
-      }
-      throw new Error(response.message || 'Login failed');
+      const loggedUser = await dispatch(login({ email, password })).unwrap();
+      showSuccess(`Welcome back, ${loggedUser.name}!`);
+      return loggedUser;
     } catch (err) {
-      showError(err.message || 'Incorrect email or password');
+      showError(err || 'Incorrect email or password');
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
-  const register = async (name, email, password, role) => {
-    setLoading(true);
+  const handleRegister = async (name, email, password, role) => {
     try {
-      const response = await api.auth.register(name, email, password, role);
-      if (response.success) {
-        showSuccess('Account created successfully! Please verify your email.');
-        return response.data;
-      }
-      throw new Error(response.message || 'Registration failed');
+      const data = await dispatch(register({ name, email, password, role })).unwrap();
+      showSuccess('Account created successfully! Please verify your email.');
+      return data;
     } catch (err) {
-      showError(err.message || 'Failed to create account');
+      showError(err || 'Failed to create account');
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
-  const logout = async () => {
-    setLoading(true);
+  const handleLogout = async () => {
     try {
-      await api.auth.logout();
+      await dispatch(logout()).unwrap();
     } catch (err) {
       console.warn('Backend logout failed:', err);
     } finally {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setUser(null);
       showInfo('Logged out successfully');
-      setLoading(false);
     }
   };
 
-  const updateProfileState = (updatedUser) => {
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+  const handleUpdateProfileState = (updatedUser) => {
+    dispatch(updateProfileState(updatedUser));
   };
 
   return (
@@ -110,14 +76,22 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         loading,
-        login,
-        register,
-        logout,
-        refreshProfile: fetchProfile,
-        updateProfileState,
+        login: handleLogin,
+        register: handleRegister,
+        logout: handleLogout,
+        refreshProfile: handleFetchProfile,
+        updateProfileState: handleUpdateProfileState,
       }}
     >
       {children}
     </AuthContext.Provider>
+  );
+};
+
+export const AuthProvider = ({ children }) => {
+  return (
+    <Provider store={store}>
+      <AuthContextShim>{children}</AuthContextShim>
+    </Provider>
   );
 };

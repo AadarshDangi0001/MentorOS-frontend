@@ -16,9 +16,12 @@ function onRefreshed(token) {
 const request = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
   const headers = {
-    'Content-Type': 'application/json',
     ...options.headers,
   };
+
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -29,8 +32,12 @@ const request = async (endpoint, options = {}) => {
     headers,
   };
 
-  if (options.body && typeof options.body === 'object') {
-    config.body = JSON.stringify(options.body);
+  if (options.body) {
+    if (options.body instanceof FormData) {
+      config.body = options.body;
+    } else if (typeof options.body === 'object') {
+      config.body = JSON.stringify(options.body);
+    }
   }
 
   let response = await fetch(`${BASE_URL}${endpoint}`, config);
@@ -87,7 +94,23 @@ const handleResponse = async (response) => {
   const data = isJson ? await response.json() : null;
 
   if (!response.ok) {
-    const errorMsg = data?.message || response.statusText || 'Something went wrong';
+    let errorMsg = data?.message || response.statusText || 'Something went wrong';
+    if (data?.errors && Array.isArray(data.errors)) {
+      const details = data.errors
+        .map((err) => {
+          if (typeof err === 'object' && err !== null) {
+            return Object.entries(err)
+              .map(([_, msg]) => msg)
+              .join(', ');
+          }
+          return String(err);
+        })
+        .filter(Boolean)
+        .join('; ');
+      if (details) {
+        errorMsg = `${errorMsg}: ${details}`;
+      }
+    }
     throw new Error(errorMsg);
   }
 
@@ -110,6 +133,10 @@ export const api = {
       request('/private/auth/change-password', { method: 'PATCH', body: { currentPassword, newPassword } }),
     updateMe: (data) =>
       request('/private/auth/me', { method: 'PATCH', body: data }),
+    forgotPassword: (email) =>
+      request('/public/auth/forgot-password', { method: 'POST', body: { email } }),
+    resetPassword: (token, password) =>
+      request(`/public/auth/reset-password/${token}`, { method: 'POST', body: { password } }),
   },
   explore: {
     list: (params = {}) => {
@@ -191,5 +218,12 @@ export const api = {
       request(`/private/admin/users/${id}/role`, { method: 'PATCH', body: { role } }),
     createMentor: (data) =>
       request('/private/admin/mentors', { method: 'POST', body: data }),
+  },
+  media: {
+    upload: (file) => {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      return request('/private/media/upload', { method: 'POST', body: formData });
+    },
   },
 };
