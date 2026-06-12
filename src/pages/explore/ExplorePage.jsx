@@ -59,13 +59,18 @@ export default function ExplorePage() {
     const name = mentor.user?.name || mentor.name || '';
     const company = mentor.company || '';
     const role = mentor.currentRole || mentor.role || '';
-    const matchesSearch =
-      !searchTerm ||
-      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.toLowerCase().includes(searchTerm.toLowerCase());
-
     const skills = mentor.expertise || mentor.skills || [];
+
+    const searchWords = searchTerm.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const matchesSearch =
+      searchWords.length === 0 ||
+      searchWords.every((word) =>
+        name.toLowerCase().includes(word) ||
+        company.toLowerCase().includes(word) ||
+        role.toLowerCase().includes(word) ||
+        skills.some((skill) => skill.toLowerCase().includes(word))
+      );
+
     const matchesSkill = !selectedSkill ||
       skills.some(s => s.toLowerCase() === selectedSkill.toLowerCase());
 
@@ -83,7 +88,7 @@ export default function ExplorePage() {
 
   const hasFilters = searchTerm || selectedSkill;
 
-  const FilterSidebar = () => (
+  const renderFilterSidebar = () => (
     <div className="bg-surface border border-border-strong rounded-2xl p-5 space-y-5">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold text-on-surface">Filters</h3>
@@ -106,7 +111,7 @@ export default function ExplorePage() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary" />
           <input
             type="text"
-            placeholder="Name, role, company..."
+            placeholder="Name, role, company, skills..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-surface-input border border-border-strong rounded-xl pl-9 pr-9 py-2.5 text-sm text-on-surface transition-all placeholder:text-secondary/50"
@@ -194,7 +199,7 @@ export default function ExplorePage() {
         </button>
         {mobileFiltersOpen && (
           <div className="mt-3 animate-fade-in">
-            <FilterSidebar />
+            {renderFilterSidebar()}
           </div>
         )}
       </div>
@@ -203,7 +208,7 @@ export default function ExplorePage() {
         {/* Sidebar — Desktop only */}
         <aside className="hidden md:block md:col-span-1 space-y-5">
           <div className="sticky top-24">
-            <FilterSidebar />
+            {renderFilterSidebar()}
           </div>
         </aside>
 
