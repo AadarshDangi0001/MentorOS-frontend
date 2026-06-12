@@ -25,6 +25,7 @@ export default function MentorProfilePage() {
   const [reviewPage, setReviewPage] = useState(1);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [showBooking, setShowBooking] = useState(false);
+  const [selectedPackageId, setSelectedPackageId] = useState(null);
 
   const fetchMentor = useCallback(async () => {
     try {
@@ -174,7 +175,10 @@ export default function MentorProfilePage() {
               )}
 
               <button
-                onClick={() => setShowBooking(true)}
+                onClick={() => {
+                  setSelectedPackageId(null);
+                  setShowBooking(true);
+                }}
                 className="w-full btn-primary text-sm py-3 rounded-xl mt-5 font-bold flex items-center justify-center gap-2"
               >
                 <Calendar size={16} /> Book a Session
@@ -267,7 +271,10 @@ export default function MentorProfilePage() {
                         ₹{Number(pkg.price).toLocaleString('en-IN')}
                       </span>
                       <button
-                        onClick={() => setShowBooking(true)}
+                        onClick={() => {
+                          setSelectedPackageId(pkg._id);
+                          setShowBooking(true);
+                        }}
                         className="btn-primary text-xs px-3 py-1.5 rounded-lg"
                       >
                         Book
@@ -347,7 +354,11 @@ export default function MentorProfilePage() {
 
       {/* Booking Modal */}
       {showBooking && (
-        <BookingModal mentor={mentor} onClose={() => setShowBooking(false)} />
+        <BookingModal
+          mentor={mentor}
+          initialPackageId={selectedPackageId}
+          onClose={() => setShowBooking(false)}
+        />
       )}
     </div>
   );

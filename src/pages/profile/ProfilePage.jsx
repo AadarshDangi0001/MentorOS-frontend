@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { useToast } from '../../components/common/Toast';
 import {
-  User, Briefcase, Award, Globe, DollarSign, Save, Link as LinkIcon, Upload, Loader2
+  User, Briefcase, Award, Globe, DollarSign, Save, Link as LinkIcon, Upload, Loader2, AlertCircle
 } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -14,6 +14,20 @@ export default function ProfilePage() {
   const [savingUser, setSavingUser] = useState(false);
   const [savingMentor, setSavingMentor] = useState(false);
   const [loadingMentor, setLoadingMentor] = useState(false);
+  const [sendingVerification, setSendingVerification] = useState(false);
+
+  const handleResendVerification = async () => {
+    if (!user?.email) return;
+    try {
+      setSendingVerification(true);
+      await api.auth.resendVerificationEmail(user.email);
+      showSuccess('Verification email sent! Please check your inbox.');
+    } catch (err) {
+      showError(err.message || 'Failed to resend verification email.');
+    } finally {
+      setSendingVerification(false);
+    }
+  };
 
   // User fields
   const [name, setName] = useState('');
@@ -166,7 +180,29 @@ export default function ProfilePage() {
       </div>
 
       <div className="max-w-3xl mx-auto space-y-8">
-          {/* Card: Personal Details */}
+        {/* Unverified Email Warning Notification */}
+        {!user.isEmailVerified && (
+          <div className="p-5 border border-amber-500/20 bg-amber-950/15 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-amber-300 animate-fade-in shadow-[0_0_24px_rgba(245,158,11,0.03)]">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 flex-shrink-0 text-amber-400 mt-0.5" />
+              <div className="text-sm">
+                <span className="font-bold block sm:inline">Email Verification Required: </span>
+                Your email address is not verified. Please check your inbox or request a new verification link.
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={sendingVerification}
+              onClick={handleResendVerification}
+              className="sm:self-center bg-amber-500 hover:bg-amber-600 text-neutral-950 transition-colors text-xs font-bold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:pointer-events-none cursor-pointer self-start w-full sm:w-auto"
+            >
+              {sendingVerification && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              Resend Verification Link
+            </button>
+          </div>
+        )}
+
+        {/* Card: Personal Details */}
           <div className="relative overflow-hidden p-6 md:p-8 border border-border-strong rounded-2xl bg-surface-container-lowest shadow-lg">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent pointer-events-none" />
             

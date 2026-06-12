@@ -16,7 +16,7 @@ const loadRazorpayScript = () => {
   });
 };
 
-export default function BookingModal({ mentor, onClose }) {
+export default function BookingModal({ mentor, initialPackageId, onClose }) {
   const { user } = useAuth();
   const { showSuccess, showError, showInfo } = useToast();
   const navigate = useNavigate();
@@ -41,8 +41,17 @@ export default function BookingModal({ mentor, onClose }) {
           api.packages.list(mentorId),
           api.availability.list(mentorId, true),
         ]);
-        setPackages(pkgRes.data?.packages || pkgRes.data || []);
+        const fetchedPackages = pkgRes.data?.packages || pkgRes.data || [];
+        setPackages(fetchedPackages);
         setSlots(slotRes.data?.slots || slotRes.data || []);
+
+        if (initialPackageId) {
+          const found = fetchedPackages.find(p => p._id === initialPackageId);
+          if (found) {
+            setSelectedPackage(found);
+            setStep(2);
+          }
+        }
       } catch (err) {
         showError('Failed to load mentor details. Please try again.');
         console.error(err);
@@ -51,7 +60,7 @@ export default function BookingModal({ mentor, onClose }) {
       }
     };
     fetchBookingDetails();
-  }, [mentorId, showError]);
+  }, [mentorId, showError, initialPackageId]);
 
   const handlePayment = async () => {
     if (!user) {

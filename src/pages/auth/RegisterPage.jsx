@@ -38,7 +38,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(name, email, password, role);
-      navigate('/auth/login');
+      navigate('/dashboard');
     } catch {
       // toast already shown in context
     } finally {
