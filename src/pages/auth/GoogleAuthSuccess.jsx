@@ -22,6 +22,10 @@ export default function GoogleAuthSuccess() {
 
     if (token) {
       localStorage.setItem('token', token);
+      const refreshToken = searchParams.get('refreshToken');
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
       refreshProfile()
         .then(() => {
           showSuccess('Welcome to MentorOS! Signed in with Google successfully.');

@@ -13,6 +13,7 @@ export const fetchProfile = createAsyncThunk(
       throw new Error(response.message || 'Failed to fetch profile');
     } catch (err) {
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       return rejectWithValue(err.message || 'Failed to fetch profile');
     }
@@ -25,8 +26,11 @@ export const login = createAsyncThunk(
     try {
       const response = await api.auth.login(email, password);
       if (response.success && response.data) {
-        const { user: loggedUser, accessToken } = response.data;
+        const { user: loggedUser, accessToken, refreshToken } = response.data;
         localStorage.setItem('token', accessToken);
+        if (refreshToken) {
+          localStorage.setItem('refreshToken', refreshToken);
+        }
         localStorage.setItem('user', JSON.stringify(loggedUser));
         return loggedUser;
       }
@@ -61,6 +65,7 @@ export const logout = createAsyncThunk(
       console.warn('Backend logout failed:', err);
     } finally {
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
     }
   }

@@ -47,23 +47,28 @@ const request = async (endpoint, options = {}) => {
     if (!isRefreshing) {
       isRefreshing = true;
       try {
+        const storedRefreshToken = localStorage.getItem('refreshToken');
         const refreshRes = await fetch(`${BASE_URL}/public/auth/refresh`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          // The backend can check the refreshToken cookie automatically since credentials is 'include'
-          // We can also pass the refresh token in the body if we store it.
-          // Since cookies are httpOnly and we are using credentials, we must add credentials: 'include'.
+          credentials: 'include',
+          body: storedRefreshToken ? JSON.stringify({ refreshToken: storedRefreshToken }) : undefined,
         });
 
         if (refreshRes.ok) {
           const refreshData = await refreshRes.json();
           const newToken = refreshData.data.accessToken;
+          const newRefreshToken = refreshData.data.refreshToken;
           localStorage.setItem('token', newToken);
+          if (newRefreshToken) {
+            localStorage.setItem('refreshToken', newRefreshToken);
+          }
           isRefreshing = false;
           onRefreshed(newToken);
         } else {
           isRefreshing = false;
           localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');
           window.location.href = '/auth/login';
           throw new Error('Session expired');
@@ -71,6 +76,7 @@ const request = async (endpoint, options = {}) => {
       } catch (err) {
         isRefreshing = false;
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
         window.location.href = '/auth/login';
         return Promise.reject(err);
@@ -126,6 +132,7 @@ export const api = {
     getMe: () => request('/private/auth/me', { method: 'GET' }),
     logout: () => {
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       return request('/private/auth/logout', { method: 'POST' }).catch(() => {});
     },
