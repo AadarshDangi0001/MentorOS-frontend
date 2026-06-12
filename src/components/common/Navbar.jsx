@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, LogOut, ChevronDown, Zap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -11,17 +11,18 @@ export default function Navbar() {
   const location = useLocation();
   const { user, logout } = useAuth();
 
+  const [prevLocation, setPrevLocation] = useState(location);
+  if (location !== prevLocation) {
+    setPrevLocation(location);
+    setIsOpen(false);
+    setUserMenuOpen(false);
+  }
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsOpen(false);
-    setUserMenuOpen(false);
-  }, [location]);
 
   // Close user menu on outside click
   useEffect(() => {
@@ -36,21 +37,7 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path;
 
-  const NavLink = ({ to, children }) => (
-    <Link
-      to={to}
-      className={`relative text-sm font-medium pb-0.5 transition-all duration-200 ${
-        isActive(to)
-          ? 'text-primary-container'
-          : 'text-secondary hover:text-on-surface'
-      }`}
-    >
-      {children}
-      {isActive(to) && (
-        <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-container rounded-full" />
-      )}
-    </Link>
-  );
+
 
   return (
     <header
@@ -76,9 +63,9 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-7">
-          <NavLink to="/explore">Explore</NavLink>
-          {user && <NavLink to="/dashboard">Dashboard</NavLink>}
-          <NavLink to="/how-it-works">How It Works</NavLink>
+          <NavLink to="/explore" currentPath={location.pathname}>Explore</NavLink>
+          {user && <NavLink to="/dashboard" currentPath={location.pathname}>Dashboard</NavLink>}
+          <NavLink to="/how-it-works" currentPath={location.pathname}>How It Works</NavLink>
         </div>
 
         {/* Right CTA Cluster */}
@@ -247,3 +234,22 @@ export default function Navbar() {
     </header>
   );
 }
+
+const NavLink = ({ to, currentPath, children }) => {
+  const isActive = currentPath === to;
+  return (
+    <Link
+      to={to}
+      className={`relative text-sm font-medium pb-0.5 transition-all duration-200 ${
+        isActive
+          ? 'text-primary-container'
+          : 'text-secondary hover:text-on-surface'
+      }`}
+    >
+      {children}
+      {isActive && (
+        <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-container rounded-full" />
+      )}
+    </Link>
+  );
+};

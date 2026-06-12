@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { useToast } from '../../components/common/Toast';
 import {
-  User, Briefcase, Award, Globe, DollarSign, Save, Link as LinkIcon, Upload, Loader2, AlertCircle
+  User, Briefcase, DollarSign, Save, Upload, Loader2, AlertCircle
 } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -47,20 +47,7 @@ export default function ProfilePage() {
   const [linkedIn, setLinkedIn] = useState('');
   const [github, setGithub] = useState('');
 
-  useEffect(() => {
-    if (user) {
-      setName(user.name || '');
-      setPhone(user.phone || '');
-      setBio(user.bio || '');
-      setAvatar(user.avatar || '');
-
-      if (user.role === 'mentor') {
-        fetchMentorProfile();
-      }
-    }
-  }, [user]);
-
-  const fetchMentorProfile = async () => {
+  const fetchMentorProfile = useCallback(async () => {
     try {
       setLoadingMentor(true);
       const res = await api.mentor.getProfile();
@@ -80,7 +67,23 @@ export default function ProfilePage() {
     } finally {
       setLoadingMentor(false);
     }
-  };
+  }, []);
+
+  const [prevUser, setPrevUser] = useState(user);
+  if (user !== prevUser) {
+    setPrevUser(user);
+    setName(user?.name || '');
+    setPhone(user?.phone || '');
+    setBio(user?.bio || '');
+    setAvatar(user?.avatar || '');
+  }
+
+  useEffect(() => {
+    if (user && user.role === 'mentor') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchMentorProfile();
+    }
+  }, [user, fetchMentorProfile]);
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];

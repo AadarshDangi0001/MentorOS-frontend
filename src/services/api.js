@@ -106,7 +106,7 @@ const handleResponse = async (response) => {
         .map((err) => {
           if (typeof err === 'object' && err !== null) {
             return Object.entries(err)
-              .map(([_, msg]) => msg)
+              .map(([, msg]) => msg)
               .join(', ');
           }
           return String(err);

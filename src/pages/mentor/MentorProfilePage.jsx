@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
-  Star, StarHalf, MapPin, Briefcase, Clock, Award, ExternalLink,
-  ChevronLeft, ChevronRight, Calendar, Shield, Users, ArrowRight,
+  Star, StarHalf, Clock, Award, ExternalLink,
+  ChevronLeft, ChevronRight, Calendar, Users,
 } from 'lucide-react';
 import BookingModal from '../../components/mentor/BookingModal';
 import { api } from '../../services/api';
@@ -27,9 +27,14 @@ export default function MentorProfilePage() {
   const [showBooking, setShowBooking] = useState(false);
   const [selectedPackageId, setSelectedPackageId] = useState(null);
 
+  const [prevMentorId, setPrevMentorId] = useState(mentorId);
+  if (mentorId !== prevMentorId) {
+    setPrevMentorId(mentorId);
+    setLoading(true);
+  }
+
   const fetchMentor = useCallback(async () => {
     try {
-      setLoading(true);
       const [mentorRes, reviewRes, pkgRes] = await Promise.all([
         api.explore.getById(mentorId),
         api.explore.getReviews(mentorId, 1, 5),
@@ -50,9 +55,10 @@ export default function MentorProfilePage() {
     } finally {
       setLoading(false);
     }
-  }, [mentorId]);
+  }, [mentorId, showError]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchMentor();
   }, [fetchMentor]);
 
@@ -76,7 +82,6 @@ export default function MentorProfilePage() {
 
   const mentorName = mentor?.user?.name || mentor?.name || 'Mentor';
   const mentorAvatar = mentor?.user?.avatar || mentor?.avatarUrl;
-  const mentorEmail = mentor?.user?.email;
   const mentorBio = mentor?.user?.bio || mentor?.bio;
 
   if (loading) {
