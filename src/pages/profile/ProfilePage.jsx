@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { api } from '../services/api';
-import { useToast } from '../components/Toast';
+import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
+import { useToast } from '../../components/common/Toast';
 import {
   User, Briefcase, Award, Globe, DollarSign, Save, Link as LinkIcon, Upload, Loader2
 } from 'lucide-react';

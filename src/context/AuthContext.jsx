@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useCallback } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from '../store';
-import { useToast } from '../components/Toast';
+import { useToast } from '../components/common/Toast';
 import { fetchProfile, login, register, logout, updateProfileState } from '../store/authSlice';
 
 const AuthContext = createContext(null);

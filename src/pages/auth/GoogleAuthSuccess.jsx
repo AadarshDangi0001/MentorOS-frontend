@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../components/Toast';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/common/Toast';
 import { Zap } from 'lucide-react';
 
 export default function GoogleAuthSuccess() {

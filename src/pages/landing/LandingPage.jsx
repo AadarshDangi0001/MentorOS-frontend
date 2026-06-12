@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import MentorScroll from '../components/MentorScroll';
-import MentorCard from '../components/MentorCard';
+import MentorScroll from '../../components/mentor/MentorScroll';
+import MentorCard from '../../components/mentor/MentorCard';
 import { ArrowRight, Star, Users, Calendar, Zap, Shield, TrendingUp, CheckCircle } from 'lucide-react';
 
 const featuredMentors = [

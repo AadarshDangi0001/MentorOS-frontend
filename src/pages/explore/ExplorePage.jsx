@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import MentorCard from '../components/MentorCard';
-import BookingModal from '../components/BookingModal';
-import { api } from '../services/api';
-import { useToast } from '../components/Toast';
+import MentorCard from '../../components/mentor/MentorCard';
+import BookingModal from '../../components/mentor/BookingModal';
+import { api } from '../../services/api';
+import { useToast } from '../../components/common/Toast';
 import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
 
 const SkeletonCard = () => (

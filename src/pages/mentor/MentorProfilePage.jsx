@@ -4,9 +4,9 @@ import {
   Star, StarHalf, MapPin, Briefcase, Clock, Award, ExternalLink,
   ChevronLeft, ChevronRight, Calendar, Shield, Users, ArrowRight,
 } from 'lucide-react';
-import BookingModal from '../components/BookingModal';
-import { api } from '../services/api';
-import { useToast } from '../components/Toast';
+import BookingModal from '../../components/mentor/BookingModal';
+import { api } from '../../services/api';
+import { useToast } from '../../components/common/Toast';
 
 const SkeletonBlock = ({ className }) => (
   <div className={`skeleton rounded-xl ${className}`} />

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../components/Toast';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/common/Toast';
 import { Eye, EyeOff, Zap, ArrowRight, GraduationCap, Briefcase } from 'lucide-react';
-import { GOOGLE_AUTH_URL } from '../utils/config';
+import { GOOGLE_AUTH_URL } from '../../utils/config';
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
