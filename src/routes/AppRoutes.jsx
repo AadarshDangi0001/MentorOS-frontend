@@ -32,6 +32,11 @@ export default function AppRoutes() {
   const location = useLocation();
   const isFullscreen = FULLSCREEN_ROUTES.some(r => location.pathname.startsWith(r));
 
+  // Scroll to top on route change
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-on-background">
       {!isFullscreen && <Navbar />}
