@@ -133,7 +133,7 @@ export default function DashboardPage() {
       ];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-24 pb-16 min-h-screen">
+    <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-10 pb-16 min-h-screen">
       {/* Unverified Email Banner */}
       {!user.isEmailVerified && (
         <div className="mb-6 p-4 border border-amber-500/20 bg-amber-950/15 rounded-2xl flex items-start gap-3 text-amber-300 animate-fade-in">

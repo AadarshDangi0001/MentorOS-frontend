@@ -167,14 +167,14 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="max-w-[1280px] mx-auto px-5 pt-24 text-center">
+      <div className="max-w-[1280px] mx-auto px-5 pt-10 text-center">
         <p className="text-secondary">Please log in to manage your profile.</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-24 pb-16 min-h-screen">
+    <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-10 pb-16 min-h-screen">
       {/* Header */}
       <div className="mb-8">
         <p className="text-xs text-primary-container font-bold uppercase tracking-widest mb-2">Account Settings</p>

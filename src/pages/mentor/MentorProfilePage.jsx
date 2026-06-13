@@ -86,7 +86,7 @@ export default function MentorProfilePage() {
 
   if (loading) {
     return (
-      <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-24 pb-16 min-h-screen">
+      <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-10 pb-16 min-h-screen">
         <div className="mb-6">
           <SkeletonBlock className="h-4 w-32" />
         </div>
@@ -107,7 +107,7 @@ export default function MentorProfilePage() {
 
   if (!mentor) {
     return (
-      <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-24 pb-16 min-h-screen flex flex-col items-center justify-center text-center">
+      <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-10 pb-16 min-h-screen flex flex-col items-center justify-center text-center">
         <div className="w-20 h-20 bg-surface-container rounded-2xl flex items-center justify-center mb-6">
           <Users size={32} className="text-secondary" />
         </div>
@@ -134,7 +134,7 @@ export default function MentorProfilePage() {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-24 pb-16 min-h-screen">
+    <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-10 pb-16 min-h-screen">
       {/* Breadcrumb */}
       <div className="mb-6">
         <Link to="/explore" className="flex items-center gap-1.5 text-sm text-secondary hover:text-primary-container transition-colors font-medium">
