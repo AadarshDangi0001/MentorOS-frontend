@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../components/common/Toast';
 import { Eye, EyeOff, Zap, ArrowRight, CheckCircle } from 'lucide-react';
 import { GOOGLE_AUTH_URL } from '../../utils/config';
 
@@ -27,7 +26,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { showError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

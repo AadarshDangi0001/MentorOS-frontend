@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useCallback } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useEffect, useCallback } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from '../store';
 import { useToast } from '../components/common/Toast';

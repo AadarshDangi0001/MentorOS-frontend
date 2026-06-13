@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Zap, User as UserIcon, Calendar, DollarSign } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { User as UserIcon, Calendar, DollarSign } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';
 
@@ -21,7 +21,13 @@ export default function AdminStatsTab() {
   }, [showError]);
 
   useEffect(() => {
-    fetchStats();
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchStats();
+      }
+    });
+    return () => { active = false; };
   }, [fetchStats]);
 
   return (

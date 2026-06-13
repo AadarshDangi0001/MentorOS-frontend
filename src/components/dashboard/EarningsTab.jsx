@@ -1,7 +1,4 @@
-import React from 'react';
-import { DollarSign, Calendar, Clock } from 'lucide-react';
-
-export default function EarningsTab({ user, bookings }) {
+export default function EarningsTab({ bookings }) {
   const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
   const formatTime = (d) => new Date(d).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 

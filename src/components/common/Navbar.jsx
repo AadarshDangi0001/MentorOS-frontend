@@ -103,12 +103,7 @@ export default function Navbar() {
                         {user.role}
                       </span>
                     </div>
-                    <Link
-                      to="/dashboard"
-                      className="flex items-center gap-2 px-3 py-2.5 text-sm text-secondary hover:text-on-surface hover:bg-white/5 transition-all"
-                    >
-                      Dashboard
-                    </Link>
+                   
                     <Link
                       to="/profile"
                       className="flex items-center gap-2 px-3 py-2.5 text-sm text-secondary hover:text-on-surface hover:bg-white/5 transition-all"

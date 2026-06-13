@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowRight, Search, Calendar, Video, Award, ChevronDown, CheckCircle2, ShieldCheck, Users, HelpCircle
+  ArrowRight, Search, Calendar, Video, Award, ChevronDown, CheckCircle2, ShieldCheck, HelpCircle
 } from 'lucide-react';
 
 const faqs = [

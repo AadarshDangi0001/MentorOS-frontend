@@ -1,8 +1,7 @@
-import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import MentorScroll from '../../components/mentor/MentorScroll';
 import MentorCard from '../../components/mentor/MentorCard';
-import { ArrowRight, Star, Users, Calendar, Zap, Shield, TrendingUp, CheckCircle } from 'lucide-react';
+import { ArrowRight, Star, Users, Calendar, Zap, TrendingUp, CheckCircle } from 'lucide-react';
 
 const featuredMentors = [
   {
@@ -194,7 +193,7 @@ export default function LandingPage() {
           {/* Connecting line */}
           <div className="hidden md:block absolute top-8 left-[calc(16.67%+32px)] right-[calc(16.67%+32px)] h-px bg-gradient-to-r from-transparent via-border-strong to-transparent" />
 
-          {steps.map((step, i) => (
+          {steps.map((step) => (
             <div key={step.number} className="relative text-center group">
               <div className="relative w-16 h-16 bg-surface-container-high rounded-2xl flex items-center justify-center mx-auto mb-5 border border-border-strong group-hover:border-primary-container/50 group-hover:shadow-[0_0_20px_rgba(249,115,22,0.1)] transition-all duration-300">
                 <span className="material-symbols-outlined text-primary-container text-2xl">{step.icon}</span>

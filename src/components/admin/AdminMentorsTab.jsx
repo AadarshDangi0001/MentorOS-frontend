@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Award, ChevronDown, ExternalLink, BookOpen, Check, X } from 'lucide-react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
+import { Plus, ChevronDown, ExternalLink, BookOpen, Check, X } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';
 import CreateMentorModal from './CreateMentorModal';
@@ -28,7 +28,13 @@ export default function AdminMentorsTab() {
   }, [showError]);
 
   useEffect(() => {
-    fetchAdminMentors(mentorsPage);
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchAdminMentors(mentorsPage);
+      }
+    });
+    return () => { active = false; };
   }, [mentorsPage, fetchAdminMentors]);
 
   const handleApproveMentor = async (userId) => {
@@ -95,7 +101,7 @@ export default function AdminMentorsTab() {
                     }[m.mentorStatus] || 'bg-white/5 border-border-strong text-secondary';
 
                     return (
-                      <React.Fragment key={m._id}>
+                      <Fragment key={m._id}>
                         <tr className="hover:bg-white/3 transition-colors">
                           <td className="p-4 whitespace-nowrap">
                             <div className="flex items-center gap-3">
@@ -220,7 +226,7 @@ export default function AdminMentorsTab() {
                             </td>
                           </tr>
                         )}
-                      </React.Fragment>
+                      </Fragment>
                     );
                   })}
                 </tbody>

@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 const mentorsList = [
   { name: 'Alex Chen', company: 'Google', avatarUrl: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=64&h=64&fit=crop' },

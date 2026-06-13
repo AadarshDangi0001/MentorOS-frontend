@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/common/Toast';
@@ -39,7 +39,7 @@ export default function GoogleAuthSuccess() {
       showError('Authentication failed. No token received.');
       navigate('/auth/login');
     }
-  }, []);
+  }, [navigate, refreshProfile, searchParams, showError, showSuccess]);
 
   return (
     <div className="fixed inset-0 bg-background flex flex-col items-center justify-center gap-6">

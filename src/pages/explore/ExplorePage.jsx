@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import MentorCard from '../../components/mentor/MentorCard';
 import BookingModal from '../../components/mentor/BookingModal';
 import { api } from '../../services/api';
@@ -49,10 +49,16 @@ export default function ExplorePage() {
     } finally {
       setLoading(false);
     }
-  }, []); // Bug fix: empty deps, showError is stable from context
+  }, [showError]);
 
   useEffect(() => {
-    fetchMentors();
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchMentors();
+      }
+    });
+    return () => { active = false; };
   }, [fetchMentors]);
 
   const filteredMentors = mentors.filter((mentor) => {

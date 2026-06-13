@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { useToast } from '../../components/common/Toast';
@@ -29,7 +29,9 @@ export default function DashboardPage() {
         if (u.role === 'admin' || u.role === 'super_admin') {
           return 'admin-stats';
         }
-      } catch (e) {}
+      } catch {
+        // ignore
+      }
     }
     return 'bookings';
   });
@@ -37,7 +39,6 @@ export default function DashboardPage() {
   const [bookings, setBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [mentorProfile, setMentorProfile] = useState(null);
-  const [loadingProfile, setLoadingProfile] = useState(false);
 
   const fetchBookings = useCallback(async () => {
     if (!user) return;
@@ -73,20 +74,19 @@ export default function DashboardPage() {
 
   const fetchMentorProfile = useCallback(async () => {
     try {
-      setLoadingProfile(true);
       const res = await api.mentor.getProfile();
       setMentorProfile(res.data?.mentor || res.data || null);
     } catch {
       // No profile yet
-    } finally {
-      setLoadingProfile(false);
     }
   }, []);
 
   useEffect(() => {
     if (user && (user.role === 'admin' || user.role === 'super_admin')) {
       if (!activeTab.startsWith('admin-')) {
-        setActiveTab('admin-stats');
+        Promise.resolve().then(() => {
+          setActiveTab('admin-stats');
+        });
       }
     }
   }, [user, activeTab]);
@@ -100,10 +100,16 @@ export default function DashboardPage() {
     if (!user.isEmailVerified) {
       showWarning('Your email address is not verified. Please check your inbox.');
     }
-    fetchBookings();
-    if (user.role === 'mentor') {
-      fetchMentorProfile();
-    }
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchBookings();
+        if (user.role === 'mentor') {
+          fetchMentorProfile();
+        }
+      }
+    });
+    return () => { active = false; };
   }, [user, navigate, fetchBookings, fetchMentorProfile, showInfo, showWarning]);
 
   if (!user) return null;

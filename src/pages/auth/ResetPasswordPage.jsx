@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useToast } from '../../components/common/Toast';
-import { Eye, EyeOff, Zap, Key } from 'lucide-react';
+import { Eye, EyeOff, Zap } from 'lucide-react';
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('');

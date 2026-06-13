@@ -30,10 +30,10 @@ export default function ProfilePage() {
   };
 
   // User fields
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [bio, setBio] = useState('');
-  const [avatar, setAvatar] = useState('');
+  const [name, setName] = useState(() => user?.name || '');
+  const [phone, setPhone] = useState(() => user?.phone || '');
+  const [bio, setBio] = useState(() => user?.bio || '');
+  const [avatar, setAvatar] = useState(() => user?.avatar || '');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -224,11 +224,11 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row items-center gap-5 pb-3">
                 <div className="relative w-20 h-20 flex-shrink-0">
                   <img
-                    src={avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=f97316&color=1a0800&bold=true&size=128`}
-                    alt={name}
+                    src={avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=f97316&color=1a0800&bold=true&size=128`}
+                    alt={user?.name || 'User'}
                     className="w-full h-full rounded-2xl border-2 border-primary-container/30 object-cover bg-surface-container"
                     onError={(e) => {
-                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=f97316&color=1a0800&bold=true&size=128`;
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=f97316&color=1a0800&bold=true&size=128`;
                     }}
                   />
                   {uploadingAvatar && (

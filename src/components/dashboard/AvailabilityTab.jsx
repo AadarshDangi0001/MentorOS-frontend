@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, Clock } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';
@@ -29,7 +29,13 @@ export default function AvailabilityTab({ user }) {
   }, [user, showError]);
 
   useEffect(() => {
-    fetchSlots();
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchSlots();
+      }
+    });
+    return () => { active = false; };
   }, [fetchSlots]);
 
   const calculateEndTime = (timeStr) => {

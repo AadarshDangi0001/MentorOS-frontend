@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useCallback } from 'react';
 import { X, CheckCircle, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 
 const ToastContext = createContext(null);
@@ -14,6 +15,10 @@ export const useToast = () => {
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
+
   const showToast = useCallback((message, type = 'info', duration = 4000) => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -23,11 +28,7 @@ export const ToastProvider = ({ children }) => {
         removeToast(id);
       }, duration);
     }
-  }, []);
-
-  const removeToast = useCallback((id) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
+  }, [removeToast]);
 
   const showSuccess = useCallback((msg, dur) => showToast(msg, 'success', dur), [showToast]);
   const showError = useCallback((msg, dur) => showToast(msg, 'error', dur), [showToast]);
@@ -51,8 +52,8 @@ const ToastItem = ({ toast, onClose }) => {
   const { message, type } = toast;
 
   // Icon and border/bg colors based on toast type
-  let Icon = Info;
-  let themeStyles = '';
+  let Icon;
+  let themeStyles;
 
   switch (type) {
     case 'success':

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Calendar, Clock, ExternalLink, X, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Clock, ExternalLink, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit, Trash2, Clock, Award } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';
@@ -32,7 +32,13 @@ export default function PackagesTab({ user }) {
   }, [user, showError]);
 
   useEffect(() => {
-    fetchPackages();
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchPackages();
+      }
+    });
+    return () => { active = false; };
   }, [fetchPackages]);
 
   const handleSavePackage = async (e) => {

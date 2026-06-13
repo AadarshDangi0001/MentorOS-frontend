@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Trash2, User as UserIcon } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Trash2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';
 import ConfirmDialog from '../common/ConfirmDialog';
@@ -27,7 +27,13 @@ export default function AdminUsersTab({ currentUser }) {
   }, [showError]);
 
   useEffect(() => {
-    fetchAdminUsers(usersPage);
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchAdminUsers(usersPage);
+      }
+    });
+    return () => { active = false; };
   }, [usersPage, fetchAdminUsers]);
 
   const handleBlockUser = async (id) => {
