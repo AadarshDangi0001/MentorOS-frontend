@@ -102,16 +102,10 @@ export default function BookingModal({ mentor, initialPackageId, onClose }) {
         handler: async (response) => {
           try {
             // Bug fix: removed duplicate setPaying(true)
-            const meetingData = {
-              roomId: `meet-${Math.random().toString(36).substring(2, 9)}`,
-              provider: 'internal',
-              meetingLink: `https://meet.google.com/${Math.random().toString(36).substring(2, 11)}`,
-            };
             const verifyRes = await api.payments.verify(
               response.razorpay_order_id,
               response.razorpay_payment_id,
-              response.razorpay_signature,
-              meetingData
+              response.razorpay_signature
             );
             if (verifyRes.success) {
               showSuccess('🎉 Booking confirmed! Check your dashboard for details.');

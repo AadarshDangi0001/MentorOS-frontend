@@ -17,6 +17,70 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
   const [rescheduleSlotId, setRescheduleSlotId] = useState('');
   const [rescheduleSlots, setRescheduleSlots] = useState([]);
   const [loadingRescheduleSlots, setLoadingRescheduleSlots] = useState(false);
+  const [meetingActionLoading, setMeetingActionLoading] = useState({}); // { [bookingId]: 'create' | 'join' | 'end' | null }
+
+  const handleCreateMeeting = async (bookingId) => {
+    try {
+      setMeetingActionLoading(prev => ({ ...prev, [bookingId]: 'create' }));
+      const res = await api.meetings.create(bookingId);
+      if (res.success) {
+        showSuccess('Meeting created successfully! You can now start/join the call.');
+        fetchBookings();
+      }
+    } catch (err) {
+      showError(err.message || 'Failed to create meeting');
+    } finally {
+      setMeetingActionLoading(prev => ({ ...prev, [bookingId]: null }));
+    }
+  };
+
+  const handleJoinHost = async (bookingId) => {
+    try {
+      setMeetingActionLoading(prev => ({ ...prev, [bookingId]: 'join' }));
+      const res = await api.meetings.joinHost(bookingId);
+      if (res.success && res.data?.meetLink) {
+        window.open(res.data.meetLink, '_blank');
+        fetchBookings(); // To refresh status to 'started'
+      } else {
+        throw new Error('Could not get join link');
+      }
+    } catch (err) {
+      showError(err.message || 'Failed to join meeting as host');
+    } finally {
+      setMeetingActionLoading(prev => ({ ...prev, [bookingId]: null }));
+    }
+  };
+
+  const handleJoinUser = async (bookingId) => {
+    try {
+      setMeetingActionLoading(prev => ({ ...prev, [bookingId]: 'join' }));
+      const res = await api.meetings.joinUser(bookingId);
+      if (res.success && res.data?.meetLink) {
+        window.open(res.data.meetLink, '_blank');
+      } else {
+        throw new Error('Could not get join link');
+      }
+    } catch (err) {
+      showError(err.message || 'Failed to join meeting');
+    } finally {
+      setMeetingActionLoading(prev => ({ ...prev, [bookingId]: null }));
+    }
+  };
+
+  const handleEndMeeting = async (bookingId) => {
+    try {
+      setMeetingActionLoading(prev => ({ ...prev, [bookingId]: 'end' }));
+      const res = await api.meetings.end(bookingId);
+      if (res.success) {
+        showSuccess('Meeting ended successfully.');
+        fetchBookings();
+      }
+    } catch (err) {
+      showError(err.message || 'Failed to end meeting');
+    } finally {
+      setMeetingActionLoading(prev => ({ ...prev, [bookingId]: null }));
+    }
+  };
 
   const confirmAction = (message, onConfirm) => {
     setConfirmDialog({ message, onConfirm });
@@ -126,6 +190,8 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
           {bookings.map((booking) => {
             const counterparty = user.role === 'mentor' ? booking.student : booking.mentor;
             const meetingLink = booking.meeting?.meetingLink;
+            const hasMeeting = !!booking.meeting;
+            const meetingStatus = booking.meeting?.status; // 'scheduled' | 'started' | 'completed'
             const statusConfig = {
               confirmed: { cls: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400', dot: 'bg-emerald-400' },
               completed: { cls: 'bg-sky-500/10 border-sky-500/20 text-sky-400', dot: 'bg-sky-400' },
@@ -168,15 +234,95 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
                   </div>
 
                   <div className="flex flex-wrap gap-2.5 items-center">
-                    {isConfirmedOrRescheduled && meetingLink && (
-                      <a
-                        href={meetingLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-primary text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5"
-                      >
-                        Join Call <ExternalLink size={13} />
-                      </a>
+                    {/* MEETING ACTION BUTTONS */}
+                    {isConfirmedOrRescheduled && (
+                      <>
+                        {user.role === 'mentor' ? (
+                          <>
+                            {/* Mentor Actions */}
+                            {!hasMeeting && (
+                              <button
+                                onClick={() => handleCreateMeeting(booking._id)}
+                                disabled={meetingActionLoading[booking._id] === 'create'}
+                                className="btn-primary text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                              >
+                                {meetingActionLoading[booking._id] === 'create' ? (
+                                  <div className="w-4 h-4 border-2 border-on-primary-container border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  'Create Meet'
+                                )}
+                              </button>
+                            )}
+
+                            {hasMeeting && meetingStatus === 'scheduled' && (
+                              <button
+                                onClick={() => handleJoinHost(booking._id)}
+                                disabled={meetingActionLoading[booking._id] === 'join'}
+                                className="btn-primary text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                              >
+                                {meetingActionLoading[booking._id] === 'join' ? (
+                                  <div className="w-4 h-4 border-2 border-on-primary-container border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <>Start Call <ExternalLink size={13} /></>
+                                )}
+                              </button>
+                            )}
+
+                            {hasMeeting && meetingStatus === 'started' && (
+                              <>
+                                <button
+                                  onClick={() => handleJoinHost(booking._id)}
+                                  disabled={meetingActionLoading[booking._id] === 'join'}
+                                  className="btn-primary text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 disabled:opacity-50 animate-pulse cursor-pointer"
+                                >
+                                  {meetingActionLoading[booking._id] === 'join' ? (
+                                    <div className="w-4 h-4 border-2 border-on-primary-container border-t-transparent rounded-full animate-spin" />
+                                  ) : (
+                                    <>Join Call <ExternalLink size={13} /></>
+                                  )}
+                                </button>
+                                <button
+                                  onClick={() => confirmAction('Are you sure you want to end this meeting? This will disconnect all participants.', () => handleEndMeeting(booking._id))}
+                                  disabled={meetingActionLoading[booking._id] === 'end'}
+                                  className="px-4 py-2.5 border border-rose-500/20 text-rose-400 hover:bg-rose-950/20 text-xs font-semibold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                  {meetingActionLoading[booking._id] === 'end' ? (
+                                    <div className="w-4 h-4 border-2 border-rose-400 border-t-transparent rounded-full animate-spin" />
+                                  ) : (
+                                    'End Meet'
+                                  )}
+                                </button>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {/* Student Actions */}
+                            {(!hasMeeting || meetingStatus === 'scheduled') && (
+                              <button
+                                disabled
+                                className="px-4 py-2.5 bg-white/5 border border-border-strong text-secondary text-xs font-semibold rounded-xl cursor-not-allowed"
+                              >
+                                Waiting for Mentor
+                              </button>
+                            )}
+
+                            {hasMeeting && meetingStatus === 'started' && (
+                              <button
+                                onClick={() => handleJoinUser(booking._id)}
+                                disabled={meetingActionLoading[booking._id] === 'join'}
+                                className="btn-primary text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 disabled:opacity-50 animate-pulse cursor-pointer"
+                              >
+                                {meetingActionLoading[booking._id] === 'join' ? (
+                                  <div className="w-4 h-4 border-2 border-on-primary-container border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <>Join Call <ExternalLink size={13} /></>
+                                )}
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </>
                     )}
                     
                     {isConfirmedOrRescheduled && user.role === 'mentor' && (
