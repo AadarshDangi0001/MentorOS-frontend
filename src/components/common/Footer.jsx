@@ -65,17 +65,17 @@ export default function Footer() {
     Product: [
       { label: 'Explore Mentors', to: '/explore' },
       { label: 'Become a Mentor', to: '/auth/register?role=mentor' },
-      { label: 'How It Works', href: '#how-it-works' },
+      { label: 'How It Works', href: '/how-it-works' },
     ],
     Company: [
-      { label: 'About', href: '#' },
-      { label: 'Blog', href: '#' },
-      { label: 'Careers', href: '#' },
+      { label: 'About', to: '/about' },
+      { label: 'Blog', to: '/blog' },
+      { label: 'Careers', to: '/careers' },
     ],
     Legal: [
-      { label: 'Privacy Policy', href: '#' },
-      { label: 'Terms of Service', href: '#' },
-      { label: 'Cookie Policy', href: '#' },
+      { label: 'Privacy Policy', to: '/privacy' },
+      { label: 'Terms of Service', to: '/terms' },
+      { label: 'Cookie Policy', to: '/cookies' },
     ],
   };
 

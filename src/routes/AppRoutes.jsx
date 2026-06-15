@@ -13,6 +13,12 @@ import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 import GoogleAuthSuccess from '../pages/auth/GoogleAuthSuccess';
 import DashboardPage from '../pages/dashboard/DashboardPage';
+import AboutPage from '../pages/info/AboutPage';
+import BlogPage from '../pages/info/BlogPage';
+import CareersPage from '../pages/info/CareersPage';
+import PrivacyPage from '../pages/info/PrivacyPage';
+import TermsPage from '../pages/info/TermsPage';
+import CookiesPage from '../pages/info/CookiesPage';
 
 // Import Components
 import Navbar from '../components/common/Navbar';
@@ -55,6 +61,12 @@ export default function AppRoutes() {
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/careers" element={<CareersPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/cookies" element={<CookiesPage />} />
         </Routes>
       </main>
 
