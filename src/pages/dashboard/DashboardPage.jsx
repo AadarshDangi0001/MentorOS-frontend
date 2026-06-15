@@ -114,7 +114,24 @@ export default function DashboardPage() {
 
   if (!user) return null;
 
-  const upcomingBookings = bookings.filter(b => b.status === 'confirmed');
+  const isPastSession = (booking) => {
+    if (['completed', 'cancelled'].includes(booking.status)) {
+      return true;
+    }
+    if (booking.meeting?.status === 'completed') {
+      return true;
+    }
+    const scheduledTime = new Date(booking.scheduledAt).getTime();
+    const durationMs = (booking.duration || 60) * 60 * 1000;
+    if (scheduledTime + durationMs < Date.now()) {
+      return true;
+    }
+    return false;
+  };
+
+  const upcomingBookings = bookings.filter(
+    b => !isPastSession(b) && ['confirmed', 'rescheduled'].includes(b.status)
+  );
   const isAdmin = user.role === 'admin' || user.role === 'super_admin';
 
   const tabConfig = isAdmin

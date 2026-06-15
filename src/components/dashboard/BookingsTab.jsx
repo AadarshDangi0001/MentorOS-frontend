@@ -18,6 +18,32 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
   const [rescheduleSlots, setRescheduleSlots] = useState([]);
   const [loadingRescheduleSlots, setLoadingRescheduleSlots] = useState(false);
   const [meetingActionLoading, setMeetingActionLoading] = useState({}); // { [bookingId]: 'create' | 'join' | 'end' | null }
+  const [subTab, setSubTab] = useState('upcoming'); // 'upcoming' | 'history'
+
+  const isPastSession = (booking) => {
+    if (['completed', 'cancelled'].includes(booking.status)) {
+      return true;
+    }
+    if (booking.meeting?.status === 'completed') {
+      return true;
+    }
+    const scheduledTime = new Date(booking.scheduledAt).getTime();
+    const durationMs = (booking.duration || 60) * 60 * 1000;
+    if (scheduledTime + durationMs < Date.now()) {
+      return true;
+    }
+    return false;
+  };
+
+  const upcomingSessions = bookings
+    .filter(b => !isPastSession(b))
+    .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
+
+  const pastSessions = bookings
+    .filter(b => isPastSession(b))
+    .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
+
+  const currentSessionsList = subTab === 'upcoming' ? upcomingSessions : pastSessions;
 
   const handleCreateMeeting = async (bookingId) => {
     try {
@@ -175,9 +201,33 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
         />
       )}
 
-      <h2 className="text-xl font-bold text-on-surface">
-        {user.role === 'mentor' ? 'Your Booked Sessions' : 'Upcoming & Past Sessions'}
-      </h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-strong pb-4 gap-4">
+        <h2 className="text-xl font-bold text-on-surface">
+          {user.role === 'mentor' ? 'Your Booked Sessions' : 'Your Sessions'}
+        </h2>
+        <div className="flex gap-1.5 p-1 bg-surface-container rounded-xl border border-border-strong self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setSubTab('upcoming')}
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${subTab === 'upcoming'
+                ? 'bg-primary-container text-on-primary-container shadow-sm'
+                : 'text-secondary hover:text-on-surface'
+              }`}
+          >
+            Upcoming ({upcomingSessions.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setSubTab('history')}
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${subTab === 'history'
+                ? 'bg-primary-container text-on-primary-container shadow-sm'
+                : 'text-secondary hover:text-on-surface'
+              }`}
+          >
+            History ({pastSessions.length})
+          </button>
+        </div>
+      </div>
 
       {loadingBookings ? (
         <div className="space-y-4">
@@ -185,9 +235,9 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
           <SkeletonRow />
           <SkeletonRow />
         </div>
-      ) : bookings.length > 0 ? (
+      ) : currentSessionsList.length > 0 ? (
         <div className="space-y-4">
-          {bookings.map((booking) => {
+          {currentSessionsList.map((booking) => {
             const counterparty = user.role === 'mentor' ? booking.student : booking.mentor;
             const meetingLink = booking.meeting?.meetingLink;
             const hasMeeting = !!booking.meeting;
@@ -195,13 +245,25 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
             const statusConfig = {
               confirmed: { cls: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400', dot: 'bg-emerald-400' },
               completed: { cls: 'bg-sky-500/10 border-sky-500/20 text-sky-400', dot: 'bg-sky-400' },
-              pending:   { cls: 'bg-amber-500/10 border-amber-500/20 text-amber-400', dot: 'bg-amber-400' },
+              pending: { cls: 'bg-amber-500/10 border-amber-500/20 text-amber-400', dot: 'bg-amber-400' },
               reschedule_requested: { cls: 'bg-purple-500/10 border-purple-500/20 text-purple-400', dot: 'bg-purple-400' },
               rescheduled: { cls: 'bg-blue-500/10 border-blue-500/20 text-blue-400', dot: 'bg-blue-400' },
               cancelled: { cls: 'bg-rose-500/10 border-rose-500/20 text-rose-400', dot: 'bg-rose-400' },
             }[booking.status] || { cls: 'bg-white/5 border-border-strong text-secondary', dot: 'bg-secondary' };
 
             const isConfirmedOrRescheduled = ['confirmed', 'rescheduled'].includes(booking.status);
+
+            const getStatusText = () => {
+              if (booking.status === 'cancelled') {
+                if (booking.cancelledBy) {
+                  const role = typeof booking.cancelledBy === 'object' ? booking.cancelledBy.role : booking.cancelledBy;
+                  if (role === 'mentor') return 'cancelled by mentor';
+                  if (role === 'student' || role === 'user') return 'cancelled by user';
+                }
+                return 'cancelled by mentor'; // default legacy
+              }
+              return booking.status.replace('_', ' ');
+            };
 
             return (
               <div key={booking._id} className="p-5 border border-border-strong bg-surface-container-lowest rounded-2xl flex flex-col hover:border-border-strong/80 transition-all space-y-4">
@@ -210,7 +272,7 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusConfig.cls}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`} />
-                        {booking.status.replace('_', ' ')}
+                        {getStatusText()}
                       </span>
                       {booking.package?.title && (
                         <span className="text-xs text-secondary">{booking.package.title}</span>
@@ -235,7 +297,7 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
 
                   <div className="flex flex-wrap gap-2.5 items-center">
                     {/* MEETING ACTION BUTTONS */}
-                    {isConfirmedOrRescheduled && (
+                    {isConfirmedOrRescheduled && !isPastSession(booking) && (
                       <>
                         {user.role === 'mentor' ? (
                           <>
@@ -324,17 +386,31 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
                         )}
                       </>
                     )}
-                    
-                    {isConfirmedOrRescheduled && user.role === 'mentor' && (
+
+                    {isConfirmedOrRescheduled && user.role === 'mentor' && !isPastSession(booking) && (
                       <>
                         <button
+                          type="button"
                           onClick={() => handleOpenRescheduleModal(booking._id)}
                           className="px-4 py-2.5 border border-border-strong hover:bg-white/5 text-secondary hover:text-on-surface text-xs font-semibold rounded-xl transition-all cursor-pointer"
                         >
                           Reschedule
                         </button>
                         <button
+                          type="button"
                           onClick={() => confirmAction('Are you sure you want to cancel this booking? This cannot be undone and will free the availability slot.', () => handleCancelBooking(booking._id))}
+                          className="px-4 py-2.5 border border-rose-500/20 text-rose-400 hover:bg-rose-950/20 text-xs font-semibold rounded-xl transition-all cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
+
+                    {isConfirmedOrRescheduled && user.role === 'student' && !isPastSession(booking) && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => confirmAction('Are you sure you want to cancel this booking? This cannot be undone.', () => handleCancelBooking(booking._id))}
                           className="px-4 py-2.5 border border-rose-500/20 text-rose-400 hover:bg-rose-950/20 text-xs font-semibold rounded-xl transition-all cursor-pointer"
                         >
                           Cancel
@@ -345,12 +421,12 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
                 </div>
 
                 {/* Reschedule Request UI */}
-                {booking.status === 'reschedule_requested' && (
+                {booking.status === 'reschedule_requested' && !isPastSession(booking) && (
                   <div className="p-4 border border-purple-500/20 bg-purple-950/10 rounded-xl space-y-3">
                     <p className="text-xs text-purple-300">
                       <span className="font-bold">Reschedule Requested:</span>{' '}
-                      {user.role === 'student' 
-                        ? 'The mentor has requested to reschedule this session.' 
+                      {user.role === 'student'
+                        ? 'The mentor has requested to reschedule this session.'
                         : 'You requested to reschedule this session. Pending student approval.'}
                     </p>
                     {booking.rescheduleNewAvailability && (
@@ -386,23 +462,34 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
             );
           })}
         </div>
-      ) : (
+      ) : subTab === 'upcoming' ? (
         <div className="flex flex-col items-center justify-center py-20 bg-surface border border-border-strong rounded-2xl text-center">
           <div className="w-16 h-16 bg-surface-container rounded-2xl flex items-center justify-center mb-5">
             <Calendar className="w-7 h-7 text-secondary" />
           </div>
-          <p className="font-bold text-on-surface text-lg mb-2">No sessions yet</p>
+          <p className="font-bold text-on-surface text-lg mb-2">No upcoming sessions</p>
           <p className="text-secondary text-sm max-w-xs">
-            {user.role === 'student' ? "Book your first mentorship session to get started." : "Students haven't booked sessions with you yet."}
+            {user.role === 'student' ? "Book your first mentorship session to get started." : "You don't have any upcoming booked sessions."}
           </p>
           {user.role === 'student' && (
             <button
+              type="button"
               onClick={() => navigate('/explore')}
-              className="mt-5 btn-primary text-sm px-6 py-2.5 rounded-xl"
+              className="mt-5 btn-primary text-sm px-6 py-2.5 rounded-xl cursor-pointer"
             >
               Find a Mentor
             </button>
           )}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-20 bg-surface border border-border-strong rounded-2xl text-center">
+          <div className="w-16 h-16 bg-surface-container rounded-2xl flex items-center justify-center mb-5">
+            <Clock className="w-7 h-7 text-secondary" />
+          </div>
+          <p className="font-bold text-on-surface text-lg mb-2">No past sessions</p>
+          <p className="text-secondary text-sm max-w-xs">
+            No completed or expired sessions in your history yet.
+          </p>
         </div>
       )}
 
