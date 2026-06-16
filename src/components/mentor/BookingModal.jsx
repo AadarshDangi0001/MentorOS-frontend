@@ -83,6 +83,7 @@ export default function BookingModal({ mentor, initialPackageId, onClose }) {
       return;
     }
 
+    let createdBookingId = null;
     try {
       setPaying(true);
       const orderRes = await api.payments.createOrder(mentorId, selectedPackage._id, selectedSlot._id);
@@ -90,7 +91,9 @@ export default function BookingModal({ mentor, initialPackageId, onClose }) {
         throw new Error(orderRes.message || 'Failed to create payment order');
       }
 
-      const { orderId, amount, currency, keyId } = orderRes.data;
+      const { orderId, amount, currency, keyId, bookingId } = orderRes.data;
+      createdBookingId = bookingId;
+
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) throw new Error('Payment gateway failed to load. Check your internet connection.');
 
@@ -118,6 +121,9 @@ export default function BookingModal({ mentor, initialPackageId, onClose }) {
             }
           } catch (err) {
             showError(err.message || 'Payment verification failed. Please contact support.');
+            if (createdBookingId) {
+              api.payments.cancel(createdBookingId).catch(console.error);
+            }
           } finally {
             setPaying(false);
           }
@@ -125,9 +131,16 @@ export default function BookingModal({ mentor, initialPackageId, onClose }) {
         prefill: { name: user.name, email: user.email },
         theme: { color: '#f97316' },
         modal: {
-          ondismiss: () => {
+          ondismiss: async () => {
             setPaying(false);
             showInfo('Payment cancelled');
+            if (createdBookingId) {
+              try {
+                await api.payments.cancel(createdBookingId);
+              } catch (err) {
+                console.error('Failed to cancel pending booking:', err);
+              }
+            }
           },
         },
       };
@@ -137,6 +150,9 @@ export default function BookingModal({ mentor, initialPackageId, onClose }) {
     } catch (err) {
       showError(err.message || 'Failed to initiate booking. Please try again.');
       setPaying(false);
+      if (createdBookingId) {
+        api.payments.cancel(createdBookingId).catch(console.error);
+      }
     }
   };
 

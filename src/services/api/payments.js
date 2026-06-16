@@ -8,4 +8,9 @@ export const payments = {
       method: 'POST',
       body: { razorpayOrderId, razorpayPaymentId, razorpaySignature, meetingData },
     }),
+  cancel: (bookingId) =>
+    request('/private/payments/cancel', {
+      method: 'POST',
+      body: { bookingId },
+    }),
 };
