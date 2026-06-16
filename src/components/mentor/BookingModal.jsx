@@ -43,7 +43,9 @@ export default function BookingModal({ mentor, initialPackageId, onClose }) {
         ]);
         const fetchedPackages = pkgRes.data?.packages || pkgRes.data || [];
         setPackages(fetchedPackages);
-        setSlots(slotRes.data?.slots || slotRes.data || []);
+        const fetchedSlots = slotRes.data?.slots || slotRes.data || [];
+        const futureSlots = fetchedSlots.filter(slot => new Date(slot.startTime) > new Date());
+        setSlots(futureSlots);
 
         if (initialPackageId) {
           const found = fetchedPackages.find(p => p._id === initialPackageId);

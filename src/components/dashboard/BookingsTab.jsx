@@ -119,7 +119,9 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
     try {
       setLoadingRescheduleSlots(true);
       const res = await api.availability.list(user._id, true);
-      setRescheduleSlots(res.data?.slots || res.data || []);
+      const fetchedSlots = res.data?.slots || res.data || [];
+      const futureSlots = fetchedSlots.filter(slot => new Date(slot.startTime) > new Date());
+      setRescheduleSlots(futureSlots);
     } catch {
       showError('Failed to load availability slots');
     } finally {

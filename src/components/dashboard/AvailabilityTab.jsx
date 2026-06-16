@@ -20,7 +20,9 @@ export default function AvailabilityTab({ user }) {
     try {
       setLoadingSlots(true);
       const res = await api.availability.list(user._id, false);
-      setSlots(res.data?.slots || res.data || []);
+      const fetchedSlots = res.data?.slots || res.data || [];
+      const futureSlots = fetchedSlots.filter(slot => new Date(slot.startTime) > new Date());
+      setSlots(futureSlots);
     } catch {
       showError('Failed to load availability slots');
     } finally {
