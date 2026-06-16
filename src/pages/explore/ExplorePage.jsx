@@ -32,6 +32,7 @@ export default function ExplorePage() {
   const [mentors, setMentors] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSkill, setSelectedSkill] = useState('');
+  const [selectedRating, setSelectedRating] = useState('');
   const [loading, setLoading] = useState(true);
   const [bookingMentor, setBookingMentor] = useState(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -40,7 +41,7 @@ export default function ExplorePage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedSkill]);
+  }, [searchTerm, selectedSkill, selectedRating]);
 
   const fetchMentors = useCallback(async () => {
     try {
@@ -86,7 +87,10 @@ export default function ExplorePage() {
     const matchesSkill = !selectedSkill ||
       skills.some(s => s.toLowerCase() === selectedSkill.toLowerCase());
 
-    return matchesSearch && matchesSkill;
+    const ratingVal = mentor.rating || 0;
+    const matchesRating = !selectedRating || ratingVal >= Number(selectedRating);
+
+    return matchesSearch && matchesSkill && matchesRating;
   });
 
   const ITEMS_PER_PAGE = 9;
@@ -103,9 +107,10 @@ export default function ExplorePage() {
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedSkill('');
+    setSelectedRating('');
   };
 
-  const hasFilters = searchTerm || selectedSkill;
+  const hasFilters = searchTerm || selectedSkill || selectedRating;
 
   const renderFilterSidebar = () => (
     <div className="bg-surface border border-border-strong rounded-2xl p-5 space-y-5">
@@ -166,6 +171,27 @@ export default function ExplorePage() {
         </div>
       </div>
 
+      {/* Rating Filter */}
+      <div>
+        <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary mb-2">
+          Rating
+        </label>
+        <div className="relative">
+          <select
+            value={selectedRating}
+            onChange={(e) => setSelectedRating(e.target.value)}
+            className="w-full appearance-none bg-surface-input border border-border-strong rounded-xl px-3 py-2.5 text-sm text-on-surface focus:outline-none pr-8 cursor-pointer transition-all"
+          >
+            <option value="">All Ratings</option>
+            <option value="5">5 Stars</option>
+            <option value="4">4 Stars & up</option>
+            <option value="3">3 Stars & up</option>
+            <option value="2">2 Stars & up</option>
+          </select>
+          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary pointer-events-none" />
+        </div>
+      </div>
+
       {/* Active Filters */}
       {hasFilters && (
         <div className="space-y-1.5">
@@ -181,6 +207,12 @@ export default function ExplorePage() {
               <span className="flex items-center gap-1 px-2.5 py-1 bg-primary-container/10 border border-primary-container/20 text-primary-container text-[11px] font-semibold rounded-full">
                 {selectedSkill}
                 <button onClick={() => setSelectedSkill('')} className="cursor-pointer hover:opacity-70"><X size={10} /></button>
+              </span>
+            )}
+            {selectedRating && (
+              <span className="flex items-center gap-1 px-2.5 py-1 bg-primary-container/10 border border-primary-container/20 text-primary-container text-[11px] font-semibold rounded-full">
+                {selectedRating} Star{selectedRating !== '5' ? 's & up' : 's'}
+                <button onClick={() => setSelectedRating('')} className="cursor-pointer hover:opacity-70"><X size={10} /></button>
               </span>
             )}
           </div>
@@ -212,7 +244,7 @@ export default function ExplorePage() {
           Filters
           {hasFilters && (
             <span className="w-4 h-4 bg-primary-container rounded-full text-[9px] font-bold text-on-primary-container flex items-center justify-center">
-              {(searchTerm ? 1 : 0) + (selectedSkill ? 1 : 0)}
+              {(searchTerm ? 1 : 0) + (selectedSkill ? 1 : 0) + (selectedRating ? 1 : 0)}
             </span>
           )}
         </button>
