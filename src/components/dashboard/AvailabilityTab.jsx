@@ -3,6 +3,7 @@ import { Plus, Trash2, Clock } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';
 import ConfirmDialog from '../common/ConfirmDialog';
+import Pagination from '../common/Pagination';
 
 export default function AvailabilityTab({ user }) {
   const { showSuccess, showError } = useToast();
@@ -13,6 +14,20 @@ export default function AvailabilityTab({ user }) {
   const [newSlotStart, setNewSlotStart] = useState('09:00');
   const [newSlotEnd, setNewSlotEnd] = useState('10:00');
   const [addingSlot, setAddingSlot] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+  const totalPages = Math.ceil(slots.length / ITEMS_PER_PAGE);
+  const paginatedSlots = slots.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
   const [confirmDialog, setConfirmDialog] = useState(null); // { message, onConfirm }
 
   const fetchSlots = useCallback(async () => {
@@ -161,7 +176,7 @@ export default function AvailabilityTab({ user }) {
       ) : slots.length > 0 ? (
         <div className="border border-border-strong rounded-2xl bg-surface-container-lowest overflow-hidden">
           <div className="divide-y divide-border-strong">
-            {slots.map((slot) => (
+            {paginatedSlots.map((slot) => (
               <div key={slot._id} className="p-4 flex items-center justify-between hover:bg-white/3 transition-all">
                 <div>
                   <p className="text-sm font-semibold text-on-surface">{formatDate(slot.startTime)}</p>
@@ -187,6 +202,11 @@ export default function AvailabilityTab({ user }) {
               </div>
             ))}
           </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         </div>
       ) : (
         <div className="text-center py-12 bg-surface border border-border-strong rounded-2xl">

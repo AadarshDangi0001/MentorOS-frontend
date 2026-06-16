@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, Clock, ExternalLink, X, Star, Check } from 'lucide-react';
+import Pagination from '../common/Pagination';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';
@@ -51,6 +52,18 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
     .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
 
   const currentSessionsList = subTab === 'upcoming' ? upcomingSessions : pastSessions;
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
+  const totalPages = Math.ceil(currentSessionsList.length / ITEMS_PER_PAGE);
+  const paginatedSessionsList = currentSessionsList.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [subTab]);
 
   const handleCreateMeeting = async (bookingId) => {
     try {
@@ -271,7 +284,7 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
         </div>
       ) : currentSessionsList.length > 0 ? (
         <div className="space-y-4">
-          {currentSessionsList.map((booking) => {
+          {paginatedSessionsList.map((booking) => {
             const counterparty = user.role === 'mentor' ? booking.student : booking.mentor;
             const meetingLink = booking.meeting?.meetingLink;
             const hasMeeting = !!booking.meeting;
@@ -513,6 +526,16 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
               </div>
             );
           })}
+          <div className="border border-border-strong rounded-2xl overflow-hidden bg-surface-container-lowest">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </div>
         </div>
       ) : subTab === 'upcoming' ? (
         <div className="flex flex-col items-center justify-center py-20 bg-surface border border-border-strong rounded-2xl text-center">

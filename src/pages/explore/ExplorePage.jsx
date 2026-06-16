@@ -4,6 +4,7 @@ import BookingModal from '../../components/mentor/BookingModal';
 import { api } from '../../services/api';
 import { useToast } from '../../components/common/Toast';
 import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
+import Pagination from '../../components/common/Pagination';
 
 const SkeletonCard = () => (
   <div className="bg-surface border border-border-strong rounded-2xl p-5 space-y-4">
@@ -34,7 +35,12 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [bookingMentor, setBookingMentor] = useState(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const { showError } = useToast();
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedSkill]);
 
   const fetchMentors = useCallback(async () => {
     try {
@@ -82,6 +88,13 @@ export default function ExplorePage() {
 
     return matchesSearch && matchesSkill;
   });
+
+  const ITEMS_PER_PAGE = 9;
+  const totalPages = Math.ceil(filteredMentors.length / ITEMS_PER_PAGE);
+  const paginatedMentors = filteredMentors.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const skillsList = Array.from(
     new Set(mentors.flatMap((m) => m.expertise || m.skills || []))
@@ -225,22 +238,34 @@ export default function ExplorePage() {
               {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
             </div>
           ) : filteredMentors.length > 0 ? (
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
-              {filteredMentors.map((mentor, index) => (
-                <MentorCard
-                  key={mentor._id || index}
-                  mentorId={mentor.user?._id || mentor.user}
-                  name={mentor.user?.name || mentor.name}
-                  role={mentor.currentRole || mentor.role}
-                  company={mentor.company}
-                  avatarUrl={mentor.user?.avatar || mentor.avatarUrl}
-                  rating={mentor.rating}
-                  reviewsCount={mentor.totalReviews ?? mentor.reviewsCount}
-                  skills={mentor.expertise || mentor.skills || []}
-                  startingPrice={mentor.hourlyRate ?? mentor.startingPrice}
-                  onBookSession={() => setBookingMentor(mentor)}
+            <div className="space-y-6">
+              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {paginatedMentors.map((mentor, index) => (
+                  <MentorCard
+                    key={mentor._id || index}
+                    mentorId={mentor.user?._id || mentor.user}
+                    name={mentor.user?.name || mentor.name}
+                    role={mentor.currentRole || mentor.role}
+                    company={mentor.company}
+                    avatarUrl={mentor.user?.avatar || mentor.avatarUrl}
+                    rating={mentor.rating}
+                    reviewsCount={mentor.totalReviews ?? mentor.reviewsCount}
+                    skills={mentor.expertise || mentor.skills || []}
+                    startingPrice={mentor.hourlyRate ?? mentor.startingPrice}
+                    onBookSession={() => setBookingMentor(mentor)}
+                  />
+                ))}
+              </div>
+              <div className="border border-border-strong rounded-2xl overflow-hidden bg-surface-container-lowest">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => {
+                    setCurrentPage(page);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                 />
-              ))}
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-24 bg-surface border border-border-strong rounded-2xl text-center">

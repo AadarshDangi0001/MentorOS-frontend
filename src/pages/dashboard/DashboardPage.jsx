@@ -136,18 +136,18 @@ export default function DashboardPage() {
 
   const tabConfig = isAdmin
     ? [
-        { id: 'admin-stats', label: 'System Stats', icon: Zap },
-        { id: 'admin-users', label: 'Manage Users', icon: UserIcon },
-        { id: 'admin-mentors', label: 'Manage Mentors', icon: Award },
-      ]
+      { id: 'admin-stats', label: 'System Stats', icon: Zap },
+      { id: 'admin-users', label: 'Manage Users', icon: UserIcon },
+      { id: 'admin-mentors', label: 'Manage Mentors', icon: Award },
+    ]
     : [
-        { id: 'bookings', label: 'Booked Sessions', icon: Calendar },
-        ...(user.role === 'mentor' ? [
-          { id: 'earnings', label: 'Earnings', icon: DollarSign },
-          { id: 'packages', label: 'Packages', icon: Award },
-          { id: 'availability', label: 'Availability', icon: Clock },
-        ] : []),
-      ];
+      { id: 'bookings', label: 'Booked Sessions', icon: Calendar },
+      ...(user.role === 'mentor' ? [
+        { id: 'earnings', label: 'Earnings', icon: DollarSign },
+        { id: 'packages', label: 'Packages', icon: Award },
+        { id: 'availability', label: 'Availability', icon: Clock },
+      ] : []),
+    ];
 
   return (
     <div className="max-w-[1280px] mx-auto px-5 md:px-8 pt-10 pb-16 min-h-screen">
@@ -216,11 +216,10 @@ export default function DashboardPage() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-left cursor-pointer ${
-                  activeTab === id
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-left cursor-pointer ${activeTab === id
                     ? 'bg-primary-container text-on-primary-container font-bold'
                     : 'text-secondary hover:text-on-surface hover:bg-white/5'
-                }`}
+                  }`}
               >
                 <Icon size={16} className="flex-shrink-0" />
                 {label}
@@ -230,7 +229,7 @@ export default function DashboardPage() {
         </aside>
 
         {/* Content Panel */}
-        <main className="md:col-span-3">
+        <main className="md:col-span-3 min-w-0">
           {/* TAB: System Stats */}
           {activeTab === 'admin-stats' && <AdminStatsTab />}
 
