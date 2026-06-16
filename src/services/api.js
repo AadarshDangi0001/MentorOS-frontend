@@ -8,6 +8,7 @@ import { payments } from './api/payments';
 import { admin } from './api/admin';
 import { meetings } from './api/meetings';
 import { media } from './api/media';
+import { reviews } from './api/reviews';
 
 export const api = {
   auth,
@@ -20,4 +21,5 @@ export const api = {
   admin,
   meetings,
   media,
+  reviews,
 };

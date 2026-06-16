@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Clock, ExternalLink, X } from 'lucide-react';
+import { Calendar, Clock, ExternalLink, X, Star, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useToast } from '../common/Toast';
@@ -19,6 +19,13 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
   const [loadingRescheduleSlots, setLoadingRescheduleSlots] = useState(false);
   const [meetingActionLoading, setMeetingActionLoading] = useState({}); // { [bookingId]: 'create' | 'join' | 'end' | null }
   const [subTab, setSubTab] = useState('upcoming'); // 'upcoming' | 'history'
+
+  // Review states
+  const [reviewBooking, setReviewBooking] = useState(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewText, setReviewText] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [hoveredRating, setHoveredRating] = useState(0);
 
   const isPastSession = (booking) => {
     if (['completed', 'cancelled'].includes(booking.status)) {
@@ -110,6 +117,31 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
 
   const confirmAction = (message, onConfirm) => {
     setConfirmDialog({ message, onConfirm });
+  };
+
+  const handleOpenReviewModal = (booking) => {
+    setReviewBooking(booking);
+    setReviewRating(5);
+    setReviewText('');
+    setHoveredRating(0);
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!reviewBooking) return;
+    try {
+      setSubmittingReview(true);
+      const res = await api.reviews.submit(reviewBooking._id, reviewRating, reviewText);
+      if (res.success) {
+        showSuccess('Feedback submitted successfully. Thank you!');
+        setReviewBooking(null);
+        fetchBookings();
+      }
+    } catch (err) {
+      showError(err.message || 'Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   const handleOpenRescheduleModal = async (bookingId) => {
@@ -389,7 +421,7 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
                       </>
                     )}
 
-                    {isConfirmedOrRescheduled && user.role === 'mentor' && !isPastSession(booking) && (
+                    {isConfirmedOrRescheduled && user.role === 'mentor' && !isPastSession(booking) && booking.meeting?.status !== 'started' && (
                       <>
                         <button
                           type="button"
@@ -408,7 +440,7 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
                       </>
                     )}
 
-                    {isConfirmedOrRescheduled && user.role === 'student' && !isPastSession(booking) && (
+                    {isConfirmedOrRescheduled && user.role === 'student' && !isPastSession(booking) && booking.meeting?.status !== 'started' && (
                       <>
                         <button
                           type="button"
@@ -417,6 +449,24 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
                         >
                           Cancel
                         </button>
+                      </>
+                    )}
+
+                    {booking.status === 'completed' && user.role === 'student' && (
+                      <>
+                        {booking.isReviewed ? (
+                          <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                            <Check size={14} /> Reviewed
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenReviewModal(booking)}
+                            className="btn-primary text-xs px-4 py-2.5 rounded-xl cursor-pointer"
+                          >
+                            Give Review
+                          </button>
+                        )}
                       </>
                     )}
                   </div>
@@ -577,6 +627,107 @@ export default function BookingsTab({ user, bookings, loadingBookings, fetchBook
                 </button>
               </div>
             )}
+          </form>
+        </div>
+      )}
+
+      {/* Review Modal */}
+      {reviewBooking && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <form onSubmit={handleSubmitReview} className="bg-surface border border-border-strong rounded-2xl p-6 max-w-md w-full shadow-2xl animate-scale-in space-y-5">
+            <div className="flex justify-between items-center pb-2 border-b border-border-strong">
+              <h3 className="font-bold text-on-surface">Share Your Feedback</h3>
+              <button 
+                type="button" 
+                onClick={() => setReviewBooking(null)} 
+                className="text-secondary hover:text-on-surface cursor-pointer font-bold"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="text-center space-y-1">
+              <p className="text-sm text-secondary">How was your session with</p>
+              <p className="font-bold text-on-surface text-base">
+                {reviewBooking.mentor?.name || 'your mentor'}
+              </p>
+            </div>
+
+            {/* Interactive Stars */}
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const isHighlighted = star <= (hoveredRating || reviewRating);
+                  return (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewRating(star)}
+                      onMouseEnter={() => setHoveredRating(star)}
+                      onMouseLeave={() => setHoveredRating(0)}
+                      className="p-1 transition-transform hover:scale-110 cursor-pointer focus:outline-none"
+                    >
+                      <Star
+                        size={32}
+                        className={`transition-colors ${
+                          isHighlighted 
+                            ? 'fill-amber-400 text-amber-400' 
+                            : 'text-border-strong hover:text-secondary'
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs font-bold text-amber-400 min-h-[16px]">
+                {
+                  {
+                    1: 'Terrible',
+                    2: 'Bad',
+                    3: 'Okay',
+                    4: 'Good',
+                    5: 'Excellent',
+                  }[hoveredRating || reviewRating]
+                }
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary">
+                Review Message
+              </label>
+              <textarea
+                rows="4"
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Tell us what you liked about the session or how the mentor can improve..."
+                className="w-full bg-surface-input border border-border-strong rounded-xl px-4 py-3 text-xs text-on-surface transition-all resize-none focus:outline-none focus:border-primary-container"
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setReviewBooking(null)}
+                className="px-4 py-2.5 border border-border-strong hover:bg-white/5 text-secondary text-xs rounded-xl transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submittingReview}
+                className="btn-primary text-xs px-5 py-2.5 rounded-xl font-semibold disabled:opacity-50 cursor-pointer flex items-center gap-2"
+              >
+                {submittingReview ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-on-primary-container border-t-transparent rounded-full animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  'Submit Review'
+                )}
+              </button>
+            </div>
           </form>
         </div>
       )}
