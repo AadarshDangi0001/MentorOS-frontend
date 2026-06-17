@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useSearchParams } from 'react-router-dom';
 
 // Import Pages from reorganized folders
 import LandingPage from '../pages/landing/LandingPage';
@@ -23,6 +23,7 @@ import CookiesPage from '../pages/info/CookiesPage';
 // Import Components
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
+import { useToast } from '../components/common/Toast';
 
 // Routes that have their own full-screen layout (no navbar/footer)
 const FULLSCREEN_ROUTES = [
@@ -37,6 +38,23 @@ const FULLSCREEN_ROUTES = [
 export default function AppRoutes() {
   const location = useLocation();
   const isFullscreen = FULLSCREEN_ROUTES.some(r => location.pathname.startsWith(r));
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { showSuccess, showError } = useToast();
+
+  React.useEffect(() => {
+    const verified = searchParams.get('verified');
+    const error = searchParams.get('error');
+
+    if (verified === 'true') {
+      showSuccess('Email verified successfully! You can now log in.');
+      searchParams.delete('verified');
+      setSearchParams(searchParams, { replace: true });
+    } else if (error) {
+      showError(decodeURIComponent(error));
+      searchParams.delete('error');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, showSuccess, showError]);
 
   // Scroll to top on route change
   React.useEffect(() => {
