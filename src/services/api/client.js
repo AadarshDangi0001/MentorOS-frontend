@@ -5,9 +5,6 @@ const BASE_URL = API_BASE;
 
 export const apiInstance = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
   withCredentials: true,
 });
 
@@ -147,7 +144,10 @@ export const request = async (endpoint, options = {}) => {
   const config = {
     method,
     url: endpoint,
-    headers,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
   };
 
   if (body) {
