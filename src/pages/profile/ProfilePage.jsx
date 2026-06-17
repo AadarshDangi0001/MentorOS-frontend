@@ -41,8 +41,8 @@ export default function ProfilePage() {
   const [mentorProfile, setMentorProfile] = useState(null);
   const [currentRole, setCurrentRole] = useState('');
   const [company, setCompany] = useState('');
-  const [experience, setExperience] = useState(0);
-  const [hourlyRate, setHourlyRate] = useState(500);
+  const [experience, setExperience] = useState('');
+  const [hourlyRate, setHourlyRate] = useState('');
   const [expertise, setExpertise] = useState('');
   const [linkedIn, setLinkedIn] = useState('');
   const [github, setGithub] = useState('');
@@ -391,7 +391,7 @@ export default function ProfilePage() {
                         required
                         min="0"
                         value={experience}
-                        onChange={(e) => setExperience(Number(e.target.value))}
+                        onChange={(e) => setExperience(e.target.value === '' ? '' : Number(e.target.value))}
                         className="w-full bg-surface-input border border-border-strong rounded-xl px-3.5 py-2.5 text-sm text-on-surface transition-all focus:border-primary-container focus:outline-none"
                       />
                     </div>
@@ -404,7 +404,7 @@ export default function ProfilePage() {
                           required
                           min="0"
                           value={hourlyRate}
-                          onChange={(e) => setHourlyRate(Number(e.target.value))}
+                          onChange={(e) => setHourlyRate(e.target.value === '' ? '' : Number(e.target.value))}
                           className="w-full bg-surface-input border border-border-strong rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-on-surface transition-all focus:border-primary-container focus:outline-none"
                         />
                       </div>

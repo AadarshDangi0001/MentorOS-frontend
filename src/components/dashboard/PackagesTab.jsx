@@ -11,7 +11,7 @@ export default function PackagesTab({ user }) {
   const [loadingPackages, setLoadingPackages] = useState(false);
   const [isAddingPackage, setIsAddingPackage] = useState(false);
   const [editingPackage, setEditingPackage] = useState(null);
-  
+
   const [packageTitle, setPackageTitle] = useState('');
   const [packageDuration, setPackageDuration] = useState(60);
   const [packagePrice, setPackagePrice] = useState(1000);
@@ -46,20 +46,20 @@ export default function PackagesTab({ user }) {
     try {
       if (editingPackage) {
         const res = await api.packages.update(editingPackage._id, packageTitle, packageDuration, packagePrice, packageDesc);
-        if (res.success) { 
-          showSuccess('Package updated!'); 
-          setEditingPackage(null); 
+        if (res.success) {
+          showSuccess('Package updated!');
+          setEditingPackage(null);
         }
       } else {
         const res = await api.packages.create(packageTitle, packageDuration, packagePrice, packageDesc);
-        if (res.success) { 
-          showSuccess('Package created!'); 
-          setIsAddingPackage(false); 
+        if (res.success) {
+          showSuccess('Package created!');
+          setIsAddingPackage(false);
         }
       }
-      setPackageTitle(''); 
-      setPackageDuration(60); 
-      setPackagePrice(1000); 
+      setPackageTitle('');
+      setPackageDuration(60);
+      setPackagePrice(1000);
       setPackageDesc('');
       fetchPackages();
     } catch (err) {
@@ -99,12 +99,12 @@ export default function PackagesTab({ user }) {
         <h2 className="text-xl font-bold text-on-surface">Mentorship Packages</h2>
         {!isAddingPackage && !editingPackage && (
           <button
-            onClick={() => { 
-              setPackageTitle(''); 
-              setPackageDuration(60); 
-              setPackagePrice(1000); 
-              setPackageDesc(''); 
-              setIsAddingPackage(true); 
+            onClick={() => {
+              setPackageTitle('');
+              setPackageDuration(60);
+              setPackagePrice(1000);
+              setPackageDesc('');
+              setIsAddingPackage(true);
             }}
             className="btn-primary text-xs px-4 py-2 rounded-xl flex items-center gap-1.5"
           >
@@ -176,12 +176,12 @@ export default function PackagesTab({ user }) {
                 <p className="text-lg font-bold text-primary-container">₹{Number(pkg.price).toLocaleString('en-IN')}</p>
                 <div className="flex gap-1.5">
                   <button
-                    onClick={() => { 
-                      setEditingPackage(pkg); 
-                      setPackageTitle(pkg.title); 
-                      setPackageDuration(pkg.duration); 
-                      setPackagePrice(pkg.price); 
-                      setPackageDesc(pkg.description || ''); 
+                    onClick={() => {
+                      setEditingPackage(pkg);
+                      setPackageTitle(pkg.title);
+                      setPackageDuration(pkg.duration);
+                      setPackagePrice(pkg.price);
+                      setPackageDesc(pkg.description || '');
                     }}
                     className="p-2 hover:bg-white/5 rounded-xl text-secondary hover:text-on-surface cursor-pointer transition-all"
                   >
