@@ -126,14 +126,14 @@ export default function PackagesTab({ user }) {
             <div>
               <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary mb-2">Duration (minutes)</label>
               <input type="number" required min="15" max="180" value={packageDuration}
-                onChange={e => setPackageDuration(Number(e.target.value))}
+                onChange={e => setPackageDuration(e.target.value === '' ? '' : Number(e.target.value))}
                 className="w-full bg-surface-input border border-border-strong rounded-xl px-3 py-2.5 text-sm text-on-surface transition-all" />
             </div>
           </div>
           <div>
             <label className="block text-[10px] font-bold uppercase tracking-wider text-secondary mb-2">Price (INR)</label>
             <input type="number" required min="0" value={packagePrice}
-              onChange={e => setPackagePrice(Number(e.target.value))}
+              onChange={e => setPackagePrice(e.target.value === '' ? '' : Number(e.target.value))}
               className="w-full bg-surface-input border border-border-strong rounded-xl px-3 py-2.5 text-sm text-on-surface transition-all" />
           </div>
           <div>
